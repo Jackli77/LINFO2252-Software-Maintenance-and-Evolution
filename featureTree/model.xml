@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<featureModel>
+	<properties>
+		<graphics key="autolayoutconstraints" value="false"/>
+		<graphics key="legendautolayout" value="true"/>
+		<graphics key="showconstraints" value="true"/>
+		<graphics key="showshortnames" value="false"/>
+		<graphics key="layout" value="horizontal"/>
+		<graphics key="showcollapsedconstraints" value="true"/>
+		<graphics key="legendhidden" value="false"/>
+		<graphics key="layoutalgorithm" value="1"/>
+	</properties>
+	<struct>
+		<and abstract="true" mandatory="true" name="SMAM">
+			<and mandatory="true" name="Appointment">
+				<graphics key="collapsed" value="false"/>
+				<feature mandatory="true" name="Date"/>
+				<feature mandatory="true" name="Type"/>
+				<feature mandatory="true" name="Department"/>
+				<or name="Optional">
+					<feature name="Location"/>
+					<feature name="Doctor name"/>
+					<feature name="Price"/>
+				</or>
+			</and>
+			<and mandatory="true" name="Medical History">
+				<graphics key="collapsed" value="false"/>
+				<feature mandatory="true" name="Past appointments"/>
+				<feature name="Search and Sort"/>
+			</and>
+			<alt mandatory="true" name="Insurance level">
+				<graphics key="collapsed" value="false"/>
+				<feature name="Minimal"/>
+				<feature name="Standard"/>
+				<feature name="Premium">
+					<graphics key="collapsed" value="false"/>
+				</feature>
+			</alt>
+			<and name="Family account">
+				<graphics key="collapsed" value="false"/>
+				<alt mandatory="true" name="Status">
+					<graphics key="collapsed" value="false"/>
+					<feature name="Primary"/>
+					<feature name="Secondary"/>
+				</alt>
+			</and>
+			<alt name="Payment Managment">
+				<feature name="OOP"/>
+				<feature name="Discounted"/>
+				<feature name="Deferred"/>
+			</alt>
+			<feature name="Reminders"/>
+			<feature name="Fast track"/>
+			<alt name="Multi-User">
+				<feature name="Generic"/>
+				<feature name="Nurse"/>
+				<feature name="Doctor"/>
+			</alt>
+		</and>
+	</struct>
+	<constraints>
+		<rule>
+			<imp>
+				<var>Fast track</var>
+				<var>Premium</var>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>Deferred</var>
+				<var>Premium</var>
+			</imp>
+		</rule>
+		<rule>
+			<imp>
+				<var>Discounted</var>
+				<disj>
+					<var>Premium</var>
+					<var>Standard</var>
+				</disj>
+			</imp>
+		</rule>
+	</constraints>
+</featureModel>
