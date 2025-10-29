@@ -5,28 +5,26 @@
 	<feature automatic="selected" name="Date"/>
 	<feature automatic="selected" name="Type"/>
 	<feature automatic="selected" name="Department"/>
-	<feature name="Optional"/>
 	<feature name="Location"/>
-	<feature name="Doctor name"/>
+	<feature name="Doctor_Name"/>
 	<feature name="Price"/>
-	<feature automatic="selected" name="Medical History"/>
-	<feature automatic="selected" name="Past appointments"/>
-	<feature name="Search and Sort"/>
-	<feature automatic="selected" name="Insurance level"/>
-	<feature name="Minimal"/>
-	<feature name="Standard"/>
-	<feature name="Premium"/>
-	<feature name="Family account"/>
-	<feature name="Status"/>
-	<feature name="Primary"/>
-	<feature name="Secondary"/>
-	<feature name="Payment Managment"/>
+	<feature automatic="selected" name="Medical_History"/>
+	<feature automatic="selected" name="Past_Appointments"/>
+	<feature manual="selected" name="Search_And_Sort"/>
+	<feature automatic="selected" name="Insurance_Level"/>
+	<feature manual="selected" name="Minimal"/>
+	<feature automatic="unselected" name="Standard"/>
+	<feature automatic="unselected" name="Premium"/>
+	<feature name="Family_account"/>
+	<feature name="Primary_User"/>
+	<feature name="Secondary_User"/>
+	<feature name="Payment_Managment"/>
 	<feature name="OOP"/>
 	<feature name="Discounted"/>
 	<feature name="Deferred"/>
 	<feature name="Reminders"/>
-	<feature name="Fast track"/>
-	<feature name="Multi-User"/>
+	<feature name="Fast_track"/>
+	<feature name="Multi_User"/>
 	<feature name="Generic"/>
 	<feature name="Nurse"/>
 	<feature name="Doctor"/>
