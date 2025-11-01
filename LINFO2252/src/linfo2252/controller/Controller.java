@@ -52,7 +52,7 @@ public class Controller implements ControllerInterface {
     @Override
     public boolean enableUIView(){
         if(uiEnabled){
-            System.out.println( "UI alredy enabled." );
+            System.out.println( "UI already enabled." );
             return true;
         }
         
@@ -65,7 +65,7 @@ public class Controller implements ControllerInterface {
     @Override
     public boolean disableUIView(){
         if( !uiEnabled ){
-            System.out.println( "UI alredy disabled." );
+            System.out.println( "UI already disabled." );
             return true;
         }
         

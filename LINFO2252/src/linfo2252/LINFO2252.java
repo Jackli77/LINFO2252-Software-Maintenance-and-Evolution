@@ -1,20 +1,25 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
 package linfo2252;
 
-/**
- *
- * @author celia
- */
-public class LINFO2252 {
+import linfo2252.controller.UIController;
+import linfo2252.model.Model;
+import linfo2252.view.UIView;
+import linfo2252.logger.UILogger;
 
-    /**
-     * @param args the command line arguments
-     */
+public class LINFO2252 {
     public static void main(String[] args) {
-        // TODO code application logic here
+        // Create the view
+        UIView view = new UIView();
+
+        // Create the logger (connects model <-> view)
+        UILogger logger = new UILogger(view);
+
+        // Create the model (receives logger)
+        Model model = new Model(logger);
+
+        // Create the controller
+        UIController controller = new UIController(model);
+
+        // Start controller
+        controller.start();
     }
-    
 }
