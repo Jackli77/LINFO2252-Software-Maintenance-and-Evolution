@@ -23,6 +23,15 @@ public class FeatureManager implements Observable{
         features.put(feature.getName(), feature);
     }
     
+    public void loadFeatures() {
+        ServiceLoader<Feature> loader = ServiceLoader.load(Feature.class);
+        for (Feature feature : loader) {
+            registerFeature(feature);
+            logs.add("[Loaded] " + feature.getName());
+        }
+        notifyObservers();
+    }
+    
     public void activate( String... names ){
         for( String name : names ){
             Feature f = features.get(name.trim());

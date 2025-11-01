@@ -9,8 +9,7 @@ public class Model {
     private final FeatureManager featureManager = new FeatureManager();
     
     public Model(){
-        featureManager.registerFeature(new UserFeature());
-        featureManager.registerFeature(new AppointmentFeature());
+    	featureManager.loadFeatures();
     }
     
     public FeatureManager getFeatureManager(){
