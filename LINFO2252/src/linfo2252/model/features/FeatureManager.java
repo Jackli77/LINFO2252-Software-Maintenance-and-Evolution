@@ -1,5 +1,5 @@
 
-package linfo2252.model;
+package linfo2252.model.features;
 
 
 import java.util.*;

@@ -1,14 +1,19 @@
 package linfo2252.model;
 
-import linfo2252.logger.Logger;
+import java.util.ArrayList;
+
+import linfo2252.model.features.AppointmentFeature;
+import linfo2252.model.features.FeatureManager;
+import linfo2252.model.features.InsuranceFeature;
+import linfo2252.model.features.MedHistoryFeature;
+import linfo2252.model.features.UserFeature;
 
 public class Model {
-    private Logger logger;
+	private final java.util.List<Appointment> appointments = new ArrayList<>();
     private final FeatureManager featureManager = new FeatureManager();
     private final TimeEventSystem tes = new TimeEventSystem(this);
 
-    public Model(Logger logger){
-        this.logger = logger;
+    public Model(){
         featureManager.registerFeature(new UserFeature());
         featureManager.registerFeature(new AppointmentFeature());
         featureManager.registerFeature(new InsuranceFeature());
@@ -21,9 +26,5 @@ public class Model {
 
     public TimeEventSystem getTES() {
         return tes;
-    }
-
-    public Logger getLogger() { 
-        return logger; 
     }
 }

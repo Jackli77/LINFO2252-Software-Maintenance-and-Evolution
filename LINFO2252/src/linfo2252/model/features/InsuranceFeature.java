@@ -1,4 +1,4 @@
-package linfo2252.model;
+package linfo2252.model.features;
 
 public class InsuranceFeature extends Feature{
     public InsuranceFeature(){
