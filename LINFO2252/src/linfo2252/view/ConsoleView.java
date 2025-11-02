@@ -1,7 +1,7 @@
 
 package linfo2252.view;
 
-import linfo2252.model.features.FeatureManager;
+import linfo2252.model.FeatureManager;
 import linfo2252.observer.Observer;
 
 import java.util.List;

@@ -1,5 +1,6 @@
 package linfo2252.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Appointment {
@@ -16,9 +17,19 @@ public class Appointment {
         this.type = type;
         this.department = department;
     }
+    
+    @Override
+    public String toString() {
+        return dateTime.toString() + " | " + type + " (" + department + ")";
+    }
+
 
     public LocalDateTime getDateTime() {
         return dateTime;
+    }
+    
+    public LocalDate getDate() {
+    	return dateTime.toLocalDate();
     }
 
     public String getType() {
@@ -41,7 +52,6 @@ public class Appointment {
         this.department = department;
     }
     
- // Optional setters
     public void setLocation(String location) {
         this.location = location;
     }

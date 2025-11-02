@@ -1,126 +1,124 @@
-
 package linfo2252.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
+import linfo2252.model.Appointment;
 import linfo2252.model.Model;
 import linfo2252.view.ConsoleView;
+import linfo2252.view.MainView;
 
-/**
- *
- * @author celia
- */
 public class Controller implements ControllerInterface {
+
     private final Model model;
-    private final ConsoleView view;
+    private final ConsoleView consoleView;
+
+    // Swing UI (optional)
+    private MainView mainView;
+
     private boolean uiEnabled = true;
-    
+
     public Controller() {
         this.model = new Model();
-        this.view = new ConsoleView(model.getFeatureManager());
+        this.consoleView = new ConsoleView(model.getFeatureManager());
     }
-    
+
+    public Model getModel() { return model; }
+
     @Override
     public int activate(String[] deactivations, String[] activations ){
-        //Desactivar primero
         if( deactivations != null ){
             for( String name : deactivations ){
                 if( !model.getFeatureManager().getAvailableFeatures().contains(name)){
-                    System.out.println( "Feature not found: " + name );
+                    System.out.println("Feature not found: " + name);
                     return 1;
                 }
-                
                 model.getFeatureManager().deactivate(name);
             }
         }
-        
-        //Activar despues
+
         if( activations != null ){
             for( String name : activations ){
                 if( !model.getFeatureManager().getAvailableFeatures().contains(name)){
-                    System.out.println( "Feature not found: " + name );
+                    System.out.println("Feature not found: " + name);
                     return 1;
                 }
-                
                 model.getFeatureManager().activate(name);
             }
         }
-        
-        return 0; //exito
+        return 0;
     }
-    
+
     @Override
     public boolean enableUIView(){
         if(uiEnabled){
-            System.out.println( "UI already enabled." );
+            System.out.println("UI already enabled.");
             return true;
         }
-        
         uiEnabled = true;
-        
-        System.out.println( "UI enabled." );
+        System.out.println("UI enabled.");
         return true;
     }
-    
+
     @Override
     public boolean disableUIView(){
-        if( !uiEnabled ){
-            System.out.println( "UI already disabled." );
+        if(!uiEnabled){
+            System.out.println("UI already disabled.");
             return true;
         }
-        
         uiEnabled = false;
-        
-        System.out.println( "UI disabled (non-blocking mode)." );
+        System.out.println("UI disabled.");
         return true;
     }
-    
+
     @Override
     public String[] getStateAsLog(){
         return model.getFeatureManager().getLogs().toArray(new String[0]);
     }
-    
+
     public void start(){
         Scanner sc = new Scanner(System.in);
-        System.out.println( "Smart Medical Appointment Manager (Console Version)" );
-        System.out.println( "Commands: activate f1,f2 | deactivate f3 | show logs | show features | exit" );
-        
-        
-        while( true ){
-            System.out.println( "> " );
+        System.out.println("Smart Medical Appointment Manager (Console Version)");
+
+        while(true){
+            System.out.print("> ");
             String input = sc.nextLine().trim();
-            if( input.equalsIgnoreCase( "exit" ) )break;
-            
-            if( input.equalsIgnoreCase( "show logs" ) ){
-                view.showLogs();
+            if(input.equalsIgnoreCase("exit")) break;
+
+            if(input.equalsIgnoreCase("next day")) {
+                model.advanceOneDay();
             }
-            else if( input.equalsIgnoreCase( "show features" ) ){
-                System.out.println( "Available features: " + model.getFeatureManager().getAvailableFeatures() );
+            else if(input.equalsIgnoreCase("show date")) {
+                System.out.println("Current date: " + model.getCurrentDate());
             }
-            else if( input.startsWith("activate") || input.startsWith("deactivate")){
-                
-                String[] activations = null;
-                String[] deactivations = null;
-                
-                
-                if( input.startsWith( "activate" ) ){
-                    activations = input.replace("activate", "").trim().split(",");
-                }
-                else if( input.startsWith( "deactivate" ) ){
-                    deactivations = input.replace("deactivate", "").trim().split(",");
-                }
-                
-                activate(deactivations,activations);
+            else if(input.equalsIgnoreCase("show logs")){
+                consoleView.showLogs();
             }
-            else{
-                System.out.println("Unknown command!");
+            else {
+                System.out.println("Unknown command.");
             }
         }
         sc.close();
     }
-    
-    public static void main( String[] args ){
-        Controller c = new Controller();
-        c.start();
+
+    // ========== UI Action Handlers (for Swing) ========== //
+
+    public void setMainView(MainView v){ this.mainView = v; }
+    public MainView getMainView(){ return mainView; }
+
+    public void onNextDayButton() {
+        model.advanceOneDay();
+        if(mainView != null) mainView.updateTimeView();
+    }
+
+    public void onAddAppointment(LocalDateTime dateTime, String type, String department) {
+        model.createAppointment(dateTime, type, department);
+        if(mainView != null) mainView.updateAppointmentView(model.getAppointments());
+    }
+
+    public void onRemoveAppointment(Appointment appt) {
+        model.removeAppointment(appt);
+        if(mainView != null) mainView.updateAppointmentView(model.getAppointments());
     }
 }
