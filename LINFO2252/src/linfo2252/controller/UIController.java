@@ -30,4 +30,13 @@ public class UIController {
             }
         }
     }
+    
+    public void advanceDay() {
+        model.getTES().advanceDays(1);
+    }
+
+	public Model getModel() {
+		return this.model;
+	}
+
 }
