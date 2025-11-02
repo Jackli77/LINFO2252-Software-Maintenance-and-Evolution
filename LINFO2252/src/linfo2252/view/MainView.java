@@ -11,6 +11,8 @@ public class MainView extends JFrame {
 
     private TimeView timeView;
     private AppointmentView appointmentView;
+    private AppointmentHistoryView historyView;
+
 
     public MainView(Controller controller) {
         this.controller = controller;
@@ -30,18 +32,23 @@ public class MainView extends JFrame {
         JPanel sidebar = new JPanel(new GridLayout(0, 1));
         JButton timeBtn = new JButton("Time");
         JButton apptBtn = new JButton("Appointments");
+        JButton historyBtn = new JButton("History");
 
         timeBtn.addActionListener(e -> showTimeView());
         apptBtn.addActionListener(e -> showAppointmentView());
+        historyBtn.addActionListener(e -> showHistoryView());
 
         sidebar.add(timeBtn);
         sidebar.add(apptBtn);
+        sidebar.add(historyBtn);
 
         contentPanel = new JPanel(new BorderLayout());
 
         // Create subviews
         timeView = new TimeView(controller);
         appointmentView = new AppointmentView(controller);
+        historyView = new AppointmentHistoryView(controller);
+
 
         setLayout(new BorderLayout());
         add(sidebar, BorderLayout.WEST);
@@ -61,6 +68,14 @@ public class MainView extends JFrame {
         contentPanel.add(appointmentView, BorderLayout.CENTER);
         revalidate(); repaint();
     }
+    
+    private void showHistoryView() {
+        contentPanel.removeAll();
+        historyView.updateHistory(controller.getModel().getAppointmentHistory());
+        contentPanel.add(historyView, BorderLayout.CENTER);
+        revalidate(); repaint();
+    }
+
 
     // ====== Called by Controller when model updates ======
     public void updateTimeView() {
@@ -70,4 +85,9 @@ public class MainView extends JFrame {
     public void updateAppointmentView(java.util.List<linfo2252.model.Appointment> list) {
         appointmentView.updateAppointmentList(list);
     }
+    
+    public void updateHistoryView(java.util.List<linfo2252.model.Appointment> list) {
+        historyView.updateHistory(list);
+    }
+
 }

@@ -18,12 +18,20 @@ public class TimeView extends JPanel {
         dateLabel = new JLabel();
         updateDate(controller.getModel().getCurrentDate());
 
-        JButton nextDayBtn = new JButton("Next Day");
-        nextDayBtn.addActionListener(e -> controller.onNextDayButton());
+        JButton advanceDayBtn = new JButton("Advance One Day");
+        advanceDayBtn.addActionListener(e -> controller.onAdvanceDay());
+
+        JButton advanceWeekBtn = new JButton("Advance One Week");
+        advanceWeekBtn.addActionListener(e -> controller.onAdvanceWeek());
 
         add(new JLabel("Current Date: "));
         add(dateLabel);
-        add(nextDayBtn);
+        
+        JPanel buttons = new JPanel();
+        buttons.add(advanceDayBtn);
+        buttons.add(advanceWeekBtn);
+        
+        add(buttons, BorderLayout.SOUTH);
     }
 
     public void updateDate(LocalDate newDate) {

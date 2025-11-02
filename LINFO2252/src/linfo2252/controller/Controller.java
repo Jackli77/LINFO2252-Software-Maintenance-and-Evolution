@@ -22,6 +22,7 @@ public class Controller implements ControllerInterface {
     public Controller() {
         this.model = new Model();
         this.consoleView = new ConsoleView(model.getFeatureManager());
+        model.loadSampleData();
     }
 
     public Model getModel() { return model; }
@@ -107,11 +108,6 @@ public class Controller implements ControllerInterface {
     public void setMainView(MainView v){ this.mainView = v; }
     public MainView getMainView(){ return mainView; }
 
-    public void onNextDayButton() {
-        model.advanceOneDay();
-        if(mainView != null) mainView.updateTimeView();
-    }
-
     public void onAddAppointment(LocalDateTime dateTime, String type, String department) {
         model.createAppointment(dateTime, type, department);
         if(mainView != null) mainView.updateAppointmentView(model.getAppointments());
@@ -121,4 +117,30 @@ public class Controller implements ControllerInterface {
         model.removeAppointment(appt);
         if(mainView != null) mainView.updateAppointmentView(model.getAppointments());
     }
+    
+    public void onViewHistory() {
+        if(mainView != null)
+            mainView.updateHistoryView(model.getAppointmentHistory());
+    }
+    
+    public void onAdvanceDay() {
+        model.advanceOneDay();
+        if(mainView != null) {
+            mainView.updateAppointmentView(model.getAppointments());
+            mainView.updateHistoryView(model.getAppointmentHistory());
+            mainView.updateTimeView();
+        }
+    }
+    
+    public void onAdvanceWeek() {
+        model.advanceOneWeek();
+        if(mainView != null) {
+            mainView.updateAppointmentView(model.getAppointments());
+            mainView.updateHistoryView(model.getAppointmentHistory());
+            mainView.updateTimeView();
+        }
+    }
+
+
+
 }

@@ -10,7 +10,8 @@ public class Model {
 
     private LocalDate currentDate;
     private PriorityQueue<ScheduledEvent> eventQueue;
-    private List<Appointment> appointments;
+    private List<Appointment> appointments = new ArrayList<>();
+    private List<Appointment> appointmentHistory = new ArrayList<>();
     private FeatureManager featureManager;
 
     public Model() {
@@ -33,14 +34,39 @@ public class Model {
     public List<Appointment> getAppointments() {
         return new ArrayList<>(appointments);
     }
+    
+    public List<Appointment> getAppointmentHistory() {
+        return new ArrayList<>(appointmentHistory);
+    }
 
     // ========== TIME EVENT SIMULATOR ========== //
 
     public void advanceOneDay() {
         currentDate = currentDate.plusDays(1);
         runDueEvents();
+        movePastAppointmentsToHistory();
+    }
+    
+    public void advanceOneWeek() {
+        currentDate = currentDate.plusWeeks(1);
+        runDueEvents();
+        movePastAppointmentsToHistory();
     }
 
+    
+    private void movePastAppointmentsToHistory() {
+        List<Appointment> toMove = new ArrayList<>();
+        for (Appointment a : appointments) {
+            // if appointment is strictly before currentDate
+            if (a.getDateTime().toLocalDate().isBefore(currentDate)) {
+                toMove.add(a);
+            }
+        }
+        appointments.removeAll(toMove);
+        appointmentHistory.addAll(toMove);
+    }
+
+        
     private void runDueEvents() {
         while (!eventQueue.isEmpty() && !eventQueue.peek().date().isAfter(currentDate)) {
             ScheduledEvent ev = eventQueue.poll();
@@ -77,4 +103,39 @@ public class Model {
             return this.date.compareTo(o.date);
         }
     }
+    
+    public void loadSampleData() {
+        // FUTURE appointments
+        appointments.add(new Appointment(
+                LocalDateTime.now().plusDays(2),
+                "Consultation",
+                "Cardiology"
+        ));
+
+        appointments.add(new Appointment(
+                LocalDateTime.now().plusDays(5),
+                "Dental Cleaning",
+                "Dentistry"
+        ));
+
+        appointments.add(new Appointment(
+                LocalDateTime.now().plusDays(8),
+                "Eye Checkup",
+                "Ophthalmology"
+        ));
+
+        // PAST appointments → directly to history
+        appointmentHistory.add(new Appointment(
+                LocalDateTime.now().minusDays(3),
+                "Vaccination",
+                "General Medicine"
+        ));
+
+        appointmentHistory.add(new Appointment(
+                LocalDateTime.now().minusDays(15),
+                "Blood Work",
+                "Laboratory"
+        ));
+    }
+
 }
