@@ -53,6 +53,10 @@ public class MainView extends JFrame {
         setLayout(new BorderLayout());
         add(sidebar, BorderLayout.WEST);
         add(contentPanel, BorderLayout.CENTER);
+        
+        updateAppointmentView(controller.getModel().getAppointments());
+        updateHistoryView(controller.getModel().getAppointmentHistory());
+        updateTimeView();
 
         showTimeView();
     }
