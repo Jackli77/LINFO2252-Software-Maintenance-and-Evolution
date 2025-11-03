@@ -3,10 +3,6 @@ package linfo2252.view;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDateTime;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
 import linfo2252.controller.Controller;
 import linfo2252.model.Appointment;
 
@@ -20,55 +16,50 @@ public class AppointmentView extends JPanel {
         this.controller = controller;
         setLayout(new BorderLayout());
 
-        listModel = new DefaultListModel<>();
-        list = new JList<>(listModel);
+        // ===== FORM =====
+        JPanel form = new JPanel(new GridLayout(0, 2, 5, 5));
 
-        JPanel top = new JPanel();
-        JTextField typeField = new JTextField(10);
-        JTextField deptField = new JTextField(10);
-        JTextField dateField = new JTextField(10); // yyyy-mm-dd
-        JTextField timeField = new JTextField(5);  // HH:mm
+        JTextField dateField = new JTextField("2025-01-01T10:00");
+        JTextField typeField = new JTextField("Consultation");
+        JTextField deptField = new JTextField("General");
 
         JButton addBtn = new JButton("Add");
-        addBtn.addActionListener(e -> {
-            try {
-                LocalDate date = LocalDate.parse(dateField.getText());
-                LocalTime time = LocalTime.parse(timeField.getText());
-                LocalDateTime dateTime = LocalDateTime.of(date, time);
-
-                controller.onAddAppointment(
-                        dateTime,
-                        typeField.getText(),
-                        deptField.getText()
-                );
-
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Invalid format.\nDate: yyyy-mm-dd\nTime: HH:mm");
-            }
-        });
+        addBtn.addActionListener(e -> controller.onAddAppointment(
+                LocalDateTime.parse(dateField.getText()),
+                typeField.getText(),
+                deptField.getText()
+        ));
 
         JButton removeBtn = new JButton("Remove Selected");
         removeBtn.addActionListener(e -> {
-            Appointment selected = list.getSelectedValue();
-            if(selected != null) controller.onRemoveAppointment(selected);
+            Appointment a = list.getSelectedValue();
+            if(a != null) controller.onRemoveAppointment(a);
         });
 
-        top.add(new JLabel("Type:"));
-        top.add(typeField);
-        top.add(new JLabel("Department:"));
-        top.add(deptField);
-        top.add(new JLabel("Date yyyy-mm-dd:"));
-        top.add(dateField);
-        top.add(new JLabel("Time HH:mm:"));
-        top.add(timeField);
-        top.add(addBtn);
-        top.add(removeBtn);
+        form.add(new JLabel("Date & Time:"));
+        form.add(dateField);
+        form.add(new JLabel("Type:"));
+        form.add(typeField);
+        form.add(new JLabel("Department:"));
+        form.add(deptField);
+
+        JPanel buttons = new JPanel();
+        buttons.add(addBtn);
+        buttons.add(removeBtn);
+
+        JPanel top = new JPanel(new BorderLayout());
+        top.add(form, BorderLayout.CENTER);
+        top.add(buttons, BorderLayout.SOUTH);
 
         add(top, BorderLayout.NORTH);
+
+        // ===== LIST =====
+        listModel = new DefaultListModel<>();
+        list = new JList<>(listModel);
         add(new JScrollPane(list), BorderLayout.CENTER);
     }
 
-    public void updateAppointmentList(List<Appointment> appointments) {
+    public void updateAppointmentList(java.util.List<Appointment> appointments) {
         listModel.clear();
         for(Appointment a : appointments) listModel.addElement(a);
     }

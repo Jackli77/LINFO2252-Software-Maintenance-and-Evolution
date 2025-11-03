@@ -2,14 +2,17 @@ package linfo2252.view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
+
 import linfo2252.controller.Controller;
 
 public class MainView extends JFrame {
 
     private Controller controller;
     private JPanel contentPanel;
+    private TimeControlPanel timeControlPanel;
 
-    private TimeView timeView;
+
     private AppointmentView appointmentView;
     private AppointmentHistoryView historyView;
 
@@ -30,41 +33,34 @@ public class MainView extends JFrame {
 
     private void initUI() {
         JPanel sidebar = new JPanel(new GridLayout(0, 1));
-        JButton timeBtn = new JButton("Time");
         JButton apptBtn = new JButton("Appointments");
         JButton historyBtn = new JButton("History");
+        setLayout(new BorderLayout());
 
-        timeBtn.addActionListener(e -> showTimeView());
         apptBtn.addActionListener(e -> showAppointmentView());
         historyBtn.addActionListener(e -> showHistoryView());
 
-        sidebar.add(timeBtn);
         sidebar.add(apptBtn);
         sidebar.add(historyBtn);
 
         contentPanel = new JPanel(new BorderLayout());
+        
+        timeControlPanel = new TimeControlPanel(controller);
+        add(timeControlPanel, BorderLayout.SOUTH);
 
-        // Create subviews
-        timeView = new TimeView(controller);
         appointmentView = new AppointmentView(controller);
         historyView = new AppointmentHistoryView(controller);
 
 
-        setLayout(new BorderLayout());
+        
         add(sidebar, BorderLayout.WEST);
         add(contentPanel, BorderLayout.CENTER);
         
         updateAppointmentView(controller.getModel().getAppointments());
         updateHistoryView(controller.getModel().getAppointmentHistory());
-        updateTimeView();
+        
+        showAppointmentView();
 
-        showTimeView();
-    }
-
-    private void showTimeView() {
-        contentPanel.removeAll();
-        contentPanel.add(timeView, BorderLayout.CENTER);
-        revalidate(); repaint();
     }
 
     private void showAppointmentView() {
@@ -82,9 +78,10 @@ public class MainView extends JFrame {
 
 
     // ====== Called by Controller when model updates ======
-    public void updateTimeView() {
-        timeView.updateDate(controller.getModel().getCurrentDate());
+    public void updateDateDisplay(LocalDate date) {
+        timeControlPanel.updateDate(date.toString());
     }
+
 
     public void updateAppointmentView(java.util.List<linfo2252.model.Appointment> list) {
         appointmentView.updateAppointmentList(list);

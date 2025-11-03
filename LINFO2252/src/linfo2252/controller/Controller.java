@@ -128,7 +128,7 @@ public class Controller implements ControllerInterface {
         if(mainView != null) {
             mainView.updateAppointmentView(model.getAppointments());
             mainView.updateHistoryView(model.getAppointmentHistory());
-            mainView.updateTimeView();
+            mainView.updateDateDisplay(model.getCurrentDate());
         }
     }
     
@@ -137,7 +137,7 @@ public class Controller implements ControllerInterface {
         if(mainView != null) {
             mainView.updateAppointmentView(model.getAppointments());
             mainView.updateHistoryView(model.getAppointmentHistory());
-            mainView.updateTimeView();
+            mainView.updateDateDisplay(model.getCurrentDate());
         }
     }
 
