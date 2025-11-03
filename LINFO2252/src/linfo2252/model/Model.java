@@ -1,6 +1,5 @@
 package linfo2252.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,16 +7,21 @@ import java.util.PriorityQueue;
 
 public class Model {
 
-    private LocalDate currentDate;
+    private LocalDateTime currentDateTime;
     private PriorityQueue<ScheduledEvent> eventQueue;
-    private List<Appointment> appointments = new ArrayList<>();
-    private List<Appointment> appointmentHistory = new ArrayList<>();
+    private List<Appointment> appointments;
+    private List<Appointment> appointmentHistory;
     private FeatureManager featureManager;
+    private UserProfile userProfile;
+
 
     public Model() {
-        this.currentDate = LocalDate.now();
+        this.currentDateTime = LocalDateTime.now();
         this.eventQueue = new PriorityQueue<>();
         this.appointments = new ArrayList<>();
+        this.appointmentHistory = new ArrayList<>();
+        this.userProfile = new UserProfile();
+
         this.featureManager = new FeatureManager();
         this.featureManager.registerFeature(new UserFeature());
         this.featureManager.registerFeature(new AppointmentFeature());
@@ -27,115 +31,111 @@ public class Model {
         return featureManager;
     }
 
-    public LocalDate getCurrentDate() {
-        return currentDate;
+    public LocalDateTime getCurrentDateTime() {
+        return currentDateTime;
     }
 
     public List<Appointment> getAppointments() {
         return new ArrayList<>(appointments);
     }
-    
+
     public List<Appointment> getAppointmentHistory() {
         return new ArrayList<>(appointmentHistory);
     }
 
-    // ========== TIME EVENT SIMULATOR ========== //
+    // ===== TIME EVENT SIMULATION ===== //
 
     public void advanceOneDay() {
-        currentDate = currentDate.plusDays(1);
-        runDueEvents();
-        movePastAppointmentsToHistory();
-    }
-    
-    public void advanceOneWeek() {
-        currentDate = currentDate.plusWeeks(1);
+        currentDateTime = currentDateTime.plusDays(1);
         runDueEvents();
         movePastAppointmentsToHistory();
     }
 
-    
+    public void advanceOneWeek() {
+        currentDateTime = currentDateTime.plusWeeks(1);
+        runDueEvents();
+        movePastAppointmentsToHistory();
+    }
+
     private void movePastAppointmentsToHistory() {
         List<Appointment> toMove = new ArrayList<>();
+
         for (Appointment a : appointments) {
-            // if appointment is strictly before currentDate
-            if (a.getDateTime().toLocalDate().isBefore(currentDate)) {
+            if (a.getDateTime().isBefore(currentDateTime)) {
                 toMove.add(a);
             }
         }
+
         appointments.removeAll(toMove);
         appointmentHistory.addAll(toMove);
     }
 
-        
     private void runDueEvents() {
-        while (!eventQueue.isEmpty() && !eventQueue.peek().date().isAfter(currentDate)) {
+        while (!eventQueue.isEmpty() && !eventQueue.peek().dateTime().isBefore(currentDateTime)) {
             ScheduledEvent ev = eventQueue.poll();
             ev.action().run();
         }
     }
 
-    public void scheduleEvent(LocalDate date, Runnable action) {
-        eventQueue.add(new ScheduledEvent(date, action));
+    public void scheduleEvent(LocalDateTime dateTime, Runnable action) {
+        eventQueue.add(new ScheduledEvent(dateTime, action));
     }
 
-    // ========== APPOINTMENTS ========== //
+    // ===== APPOINTMENTS ===== //
 
-    public void createAppointment(LocalDateTime dateTime, String type, String department) {
-        Appointment appt = new Appointment(dateTime,type,department);
+    public boolean createAppointment(LocalDateTime dateTime, String type, String department) {
+
+        // prevent past appointments
+        if (dateTime.isBefore(currentDateTime)) return false;
+
+        Appointment appt = new Appointment(dateTime, type, department);
         appointments.add(appt);
 
-        // Automatically schedule reminder event
-        scheduleEvent(appt.getDate().minusDays(1), () ->
-                System.out.println("Reminder: appointment \"" + type + " at " + department + "\" is tomorrow."));
+        // Schedule reminder 1 day before (at same time)
+        scheduleEvent(dateTime.minusDays(1), () ->
+                System.out.println("Reminder: \"" + type + "\" at " + department + " happens tomorrow."));
 
-        scheduleEvent(appt.getDate(), () ->
-                System.out.println("Appointment today: " + type + " at " + department));
+        // Schedule actual appointment notice
+        scheduleEvent(dateTime, () ->
+                System.out.println("Appointment NOW: " + type + " (" + department + ")"));
+
+        return true;
     }
 
     public void removeAppointment(Appointment appt) {
         appointments.remove(appt);
     }
 
-    // ========== RECORD CLASS FOR EVENTS ========== //
-    private record ScheduledEvent(LocalDate date, Runnable action) implements Comparable<ScheduledEvent> {
+    // Events now operate with LocalDateTime precision
+    private record ScheduledEvent(LocalDateTime dateTime, Runnable action)
+            implements Comparable<ScheduledEvent> {
+
         @Override
         public int compareTo(ScheduledEvent o) {
-            return this.date.compareTo(o.date);
+            return this.dateTime.compareTo(o.dateTime);
         }
     }
     
-    public void loadSampleData() {
-        // FUTURE appointments
-        appointments.add(new Appointment(
-                LocalDateTime.now().plusDays(2),
-                "Consultation",
-                "Cardiology"
-        ));
-
-        appointments.add(new Appointment(
-                LocalDateTime.now().plusDays(5),
-                "Dental Cleaning",
-                "Dentistry"
-        ));
-
-        appointments.add(new Appointment(
-                LocalDateTime.now().plusDays(8),
-                "Eye Checkup",
-                "Ophthalmology"
-        ));
-
-        // PAST appointments → directly to history
-        appointmentHistory.add(new Appointment(
-                LocalDateTime.now().minusDays(3),
-                "Vaccination",
-                "General Medicine"
-        ));
-
-        appointmentHistory.add(new Appointment(
-                LocalDateTime.now().minusDays(15),
-                "Blood Work",
-                "Laboratory"
-        ));
+    public UserProfile getUserProfile() {
+        return userProfile;
     }
 
+    public void setUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
+    }
+
+    public void loadSampleData() {
+        appointments.add(new Appointment(currentDateTime.plusDays(2), "Consultation", "Cardiology"));
+        appointments.add(new Appointment(currentDateTime.plusDays(5), "Dental Cleaning", "Dentistry"));
+        appointments.add(new Appointment(currentDateTime.plusDays(8), "Eye Checkup", "Ophthalmology"));
+
+        appointmentHistory.add(new Appointment(currentDateTime.minusDays(3), "Vaccination", "General Medicine"));
+        appointmentHistory.add(new Appointment(currentDateTime.minusDays(15), "Blood Work", "Laboratory"));
+        
+        userProfile.setName("John Doe");
+        userProfile.setEmail("john.doe@example.com");
+        userProfile.setPhoneNumber("+123456789");
+        userProfile.setInsurance(InsuranceLevel.STANDARD);
+        userProfile.setAccountType(AccountType.PRIMARY_USER);
+    }
 }

@@ -2,7 +2,8 @@ package linfo2252.view;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import linfo2252.controller.Controller;
 
@@ -15,6 +16,7 @@ public class MainView extends JFrame {
 
     private AppointmentView appointmentView;
     private AppointmentHistoryView historyView;
+    private UserView userView;
 
 
     public MainView(Controller controller) {
@@ -35,13 +37,17 @@ public class MainView extends JFrame {
         JPanel sidebar = new JPanel(new GridLayout(0, 1));
         JButton apptBtn = new JButton("Appointments");
         JButton historyBtn = new JButton("History");
+        JButton userBtn = new JButton("User Profile");
+
         setLayout(new BorderLayout());
 
         apptBtn.addActionListener(e -> showAppointmentView());
         historyBtn.addActionListener(e -> showHistoryView());
+        userBtn.addActionListener(e -> showUserView());
 
         sidebar.add(apptBtn);
         sidebar.add(historyBtn);
+        sidebar.add(userBtn);
 
         contentPanel = new JPanel(new BorderLayout());
         
@@ -50,7 +56,7 @@ public class MainView extends JFrame {
 
         appointmentView = new AppointmentView(controller);
         historyView = new AppointmentHistoryView(controller);
-
+        userView = new UserView(controller);
 
         
         add(sidebar, BorderLayout.WEST);
@@ -75,11 +81,18 @@ public class MainView extends JFrame {
         contentPanel.add(historyView, BorderLayout.CENTER);
         revalidate(); repaint();
     }
+    
+    private void showUserView() {
+        contentPanel.removeAll();
+        userView.updateUserInfo(controller.getModel().getUserProfile());
+        contentPanel.add(userView, BorderLayout.CENTER);
+        revalidate(); repaint();
+    }
 
 
     // ====== Called by Controller when model updates ======
-    public void updateDateDisplay(LocalDate date) {
-        timeControlPanel.updateDate(date.toString());
+    public void updateDateDisplay(LocalDateTime date) {
+        timeControlPanel.updateDate(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd kk:mm")));
     }
 
 

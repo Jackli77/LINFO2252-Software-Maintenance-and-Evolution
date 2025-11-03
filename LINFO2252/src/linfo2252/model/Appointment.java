@@ -2,6 +2,7 @@ package linfo2252.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Appointment {
     private LocalDateTime dateTime;
@@ -20,9 +21,8 @@ public class Appointment {
     
     @Override
     public String toString() {
-        return dateTime.toString() + " | " + type + " (" + department + ")";
+        return dateTime.format(DateTimeFormatter.ofPattern("yyyy/MM/dd kk:mm")) + " | " + type + " (" + department + ")";
     }
-
 
     public LocalDateTime getDateTime() {
         return dateTime;

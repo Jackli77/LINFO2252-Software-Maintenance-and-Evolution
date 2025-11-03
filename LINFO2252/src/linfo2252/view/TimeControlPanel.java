@@ -3,6 +3,7 @@ package linfo2252.view;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import linfo2252.controller.Controller;
 
@@ -15,7 +16,7 @@ public class TimeControlPanel extends JPanel {
 
         JButton dayBtn = new JButton("Advance 1 Day");
         JButton weekBtn = new JButton("Advance 1 Week");
-        dateLabel = new JLabel("Current Date: " + controller.getModel().getCurrentDate());
+        dateLabel = new JLabel("Current Date: " + controller.getModel().getCurrentDateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd kk:mm")));
 
         dayBtn.addActionListener(e -> controller.onAdvanceDay());
         weekBtn.addActionListener(e -> controller.onAdvanceWeek());

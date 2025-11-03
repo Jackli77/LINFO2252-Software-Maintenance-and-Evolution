@@ -91,7 +91,7 @@ public class Controller implements ControllerInterface {
                 model.advanceOneDay();
             }
             else if(input.equalsIgnoreCase("show date")) {
-                System.out.println("Current date: " + model.getCurrentDate());
+                System.out.println("Current date: " + model.getCurrentDateTime());
             }
             else if(input.equalsIgnoreCase("show logs")){
                 consoleView.showLogs();
@@ -128,7 +128,7 @@ public class Controller implements ControllerInterface {
         if(mainView != null) {
             mainView.updateAppointmentView(model.getAppointments());
             mainView.updateHistoryView(model.getAppointmentHistory());
-            mainView.updateDateDisplay(model.getCurrentDate());
+            mainView.updateDateDisplay(model.getCurrentDateTime());
         }
     }
     
@@ -137,10 +137,8 @@ public class Controller implements ControllerInterface {
         if(mainView != null) {
             mainView.updateAppointmentView(model.getAppointments());
             mainView.updateHistoryView(model.getAppointmentHistory());
-            mainView.updateDateDisplay(model.getCurrentDate());
+            mainView.updateDateDisplay(model.getCurrentDateTime());
         }
     }
-
-
-
+    
 }
