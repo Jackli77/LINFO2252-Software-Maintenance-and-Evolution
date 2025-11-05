@@ -1,6 +1,5 @@
 package linfo2252.controller;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
@@ -14,7 +13,6 @@ public class Controller implements ControllerInterface {
     private final Model model;
     private final ConsoleView consoleView;
 
-    // Swing UI (optional)
     private MainView mainView;
 
     private boolean uiEnabled = true;
@@ -88,7 +86,7 @@ public class Controller implements ControllerInterface {
             if(input.equalsIgnoreCase("exit")) break;
 
             if(input.equalsIgnoreCase("next day")) {
-                model.advanceOneDay();
+                model.advanceDays(1);
             }
             else if(input.equalsIgnoreCase("show date")) {
                 System.out.println("Current date: " + model.getCurrentDateTime());
@@ -103,7 +101,7 @@ public class Controller implements ControllerInterface {
         sc.close();
     }
 
-    // ========== UI Action Handlers (for Swing) ========== //
+    // ========== UI Action Handlers ========== //
 
     public void setMainView(MainView v){ this.mainView = v; }
     public MainView getMainView(){ return mainView; }
@@ -123,17 +121,8 @@ public class Controller implements ControllerInterface {
             mainView.updateHistoryView(model.getAppointmentHistory());
     }
     
-    public void onAdvanceDay() {
-        model.advanceOneDay();
-        if(mainView != null) {
-            mainView.updateAppointmentView(model.getAppointments());
-            mainView.updateHistoryView(model.getAppointmentHistory());
-            mainView.updateDateDisplay(model.getCurrentDateTime());
-        }
-    }
-    
-    public void onAdvanceWeek() {
-        model.advanceOneWeek();
+    public void onAdvanceDays(int days) {
+        model.advanceDays(days);
         if(mainView != null) {
             mainView.updateAppointmentView(model.getAppointments());
             mainView.updateHistoryView(model.getAppointmentHistory());

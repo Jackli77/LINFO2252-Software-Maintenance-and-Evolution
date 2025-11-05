@@ -45,14 +45,8 @@ public class Model {
 
     // ===== TIME EVENT SIMULATION ===== //
 
-    public void advanceOneDay() {
-        currentDateTime = currentDateTime.plusDays(1);
-        runDueEvents();
-        movePastAppointmentsToHistory();
-    }
-
-    public void advanceOneWeek() {
-        currentDateTime = currentDateTime.plusWeeks(1);
+    public void advanceDays(int days) {
+        currentDateTime = currentDateTime.plusDays(days);
         runDueEvents();
         movePastAppointmentsToHistory();
     }
