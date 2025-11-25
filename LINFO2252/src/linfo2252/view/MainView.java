@@ -33,6 +33,13 @@ public class MainView extends JFrame {
         setVisible(true);
     }
 
+    private void logState(String pageName, String action) {
+        // get the feature manager from the model
+        var featureManager = controller.getModel().getFeatureManager();
+        featureManager.logSystemState(action, pageName);
+    }
+
+
     private void initUI() {
         JPanel sidebar = new JPanel(new GridLayout(0, 1));
         JButton apptBtn = new JButton("Appointments");
@@ -73,21 +80,28 @@ public class MainView extends JFrame {
         contentPanel.removeAll();
         contentPanel.add(appointmentView, BorderLayout.CENTER);
         revalidate(); repaint();
+
+        logState("APPOINTMENTS", "switchPage");
     }
-    
+
     private void showHistoryView() {
         contentPanel.removeAll();
         historyView.updateHistory(controller.getModel().getAppointmentHistory());
         contentPanel.add(historyView, BorderLayout.CENTER);
         revalidate(); repaint();
+
+        logState("HISTORY", "switchPage");
     }
-    
+
     private void showUserView() {
         contentPanel.removeAll();
         userView.updateUserInfo(controller.getModel().getUserProfile());
         contentPanel.add(userView, BorderLayout.CENTER);
         revalidate(); repaint();
+
+        logState("USER_PROFILE", "switchPage");
     }
+
 
 
     // ====== Called by Controller when model updates ======

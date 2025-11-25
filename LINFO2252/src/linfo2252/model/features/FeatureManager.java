@@ -21,40 +21,51 @@ public class FeatureManager implements Observable{
     
     public void registerFeature( Feature feature ){
         features.put(feature.getName(), feature);
-    }   
-    
-    public void activate( String... names ){
-        for( String name : names ){
-            Feature f = features.get(name.trim());
-            if( f != null ){
-                f.activate();
-                logs.add( "[Activated]" + name );
-            }
-            else{
-                logs.add("[Error] Feature not found: " + name );
-            }
-        }
-        
-        notifyObservers();
     }
     
-    public void deactivate( String... names ){
-        for( String name : names ){
-            Feature f = features.get(name.trim());
-            if( f != null ){
-                f.deactivate();
-                logs.add( "[Deactivated]" + name );
-            }
-            else{
-                logs.add("[Error] Feature not found: " + name );
+    public List<String> getActiveFeatures() {
+        List<String> active = new ArrayList<>();
+        for (Feature f : features.values()) {
+            if (f.isActive()) {
+                active.add(f.getName());
             }
         }
-        
-        notifyObservers();
+        return active;
     }
     
-    public List<String> getLogs(){
-        return logs;
+    public List<String> getLogs() {
+        return Collections.unmodifiableList(logs);
+    }
+    
+    public void logSystemState(String action, String currentPage) {
+        String activeStr = String.join(", ", getActiveFeatures());
+
+        String logLine = String.format(
+            "%s | action=%s | page=%s | activeFeatures=[%s]",
+            java.time.LocalDateTime.now(),
+            action,
+            currentPage,
+            activeStr
+        );
+
+        logs.add(logLine);
+        notifyObservers(); // ConsoleView will refresh automatically
+    }
+    
+    public void activate(String name) {
+        Feature f = features.get(name);
+        if (f != null && !f.isActive()) {
+            f.activate();
+            logSystemState("activate(" + name + ")", /* currentPage */ "UNKNOWN");
+        }
+    }
+
+    public void deactivate(String name) {
+        Feature f = features.get(name);
+        if (f != null && f.isActive()) {
+            f.deactivate();
+            logSystemState("deactivate(" + name + ")", /* currentPage */ "UNKNOWN");
+        }
     }
     
     public Set<String> getAvailableFeatures(){

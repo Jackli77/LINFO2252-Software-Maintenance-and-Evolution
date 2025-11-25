@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import linfo2252.model.features.FeatureManager;
+import linfo2252.model.features.UserFeature;
+import linfo2252.model.features.AppointmentFeature;
+
 public class Model {
 
     private LocalDateTime currentDateTime;
