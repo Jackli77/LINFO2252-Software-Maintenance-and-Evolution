@@ -4,8 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List; // Import List for the updates
 
 import linfo2252.controller.Controller;
+import linfo2252.model.Appointment; // explicit import for clarity
 
 public class MainView extends JFrame {
 
@@ -13,32 +15,31 @@ public class MainView extends JFrame {
     private JPanel contentPanel;
     private TimeControlPanel timeControlPanel;
 
-
     private AppointmentView appointmentView;
     private AppointmentHistoryView historyView;
     private UserView userView;
 
-
     public MainView(Controller controller) {
         this.controller = controller;
-        controller.setMainView(this);
-
+        // controller.setMainView(this); // Usually handled in Controller constructor, but fine here
+        
         setTitle("Smart Medical Appointment Manager");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(600, 400);
         setLocationRelativeTo(null);
 
         initUI();
-
         setVisible(true);
     }
 
+    // --- REFACTORED METHOD ---
+    // The View no longer touches the Model or FeatureManager directly.
     private void logState(String pageName, String action) {
-        // get the feature manager from the model
-        var featureManager = controller.getModel().getFeatureManager();
-        featureManager.logSystemState(action, pageName);
+        // We delegate entirely to the controller.
+        // The controller will determine the "SystemState", timestamp it, and save the JSON.
+        controller.logUserAction(action, pageName); 
     }
-
+    // -------------------------
 
     private void initUI() {
         JPanel sidebar = new JPanel(new GridLayout(0, 1));
@@ -64,23 +65,23 @@ public class MainView extends JFrame {
         appointmentView = new AppointmentView(controller);
         historyView = new AppointmentHistoryView(controller);
         userView = new UserView(controller);
-
         
         add(sidebar, BorderLayout.WEST);
         add(contentPanel, BorderLayout.CENTER);
         
+        // Initial Data Load
         updateAppointmentView(controller.getModel().getAppointments());
         updateHistoryView(controller.getModel().getAppointmentHistory());
         
         showAppointmentView();
-
     }
 
     private void showAppointmentView() {
         contentPanel.removeAll();
         contentPanel.add(appointmentView, BorderLayout.CENTER);
         revalidate(); repaint();
-
+        
+        // Log the state change
         logState("APPOINTMENTS", "switchPage");
     }
 
@@ -90,6 +91,7 @@ public class MainView extends JFrame {
         contentPanel.add(historyView, BorderLayout.CENTER);
         revalidate(); repaint();
 
+        // Log the state change
         logState("HISTORY", "switchPage");
     }
 
@@ -99,23 +101,20 @@ public class MainView extends JFrame {
         contentPanel.add(userView, BorderLayout.CENTER);
         revalidate(); repaint();
 
+        // Log the state change
         logState("USER_PROFILE", "switchPage");
     }
-
-
 
     // ====== Called by Controller when model updates ======
     public void updateDateDisplay(LocalDateTime date) {
         timeControlPanel.updateDate(date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd kk:mm")));
     }
 
-
-    public void updateAppointmentView(java.util.List<linfo2252.model.Appointment> list) {
+    public void updateAppointmentView(List<Appointment> list) {
         appointmentView.updateAppointmentList(list);
     }
     
-    public void updateHistoryView(java.util.List<linfo2252.model.Appointment> list) {
+    public void updateHistoryView(List<Appointment> list) {
         historyView.updateHistory(list);
     }
-
 }

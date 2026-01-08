@@ -1,26 +1,25 @@
-
 package linfo2252.model.features;
 
-
 import java.util.*;
-
-
 import linfo2252.observer.Observable;
 import linfo2252.observer.Observer;
 
 /**
- *
- * @author celia
+ * Manages the lifecycle of features.
+ * Now purely a Data/Logic manager. Logging is delegated to the Controller.
  */
-public class FeatureManager implements Observable{
-    private final Map<String, Feature> features = new HashMap<>();
-    private final List<String> logs = new ArrayList<>();
+public class FeatureManager implements Observable {
     
+    private final Map<String, Feature> features = new HashMap<>();
     private final List<Observer> observers = new ArrayList<>();
     
-    
-    public void registerFeature( Feature feature ){
+    public void registerFeature(Feature feature) {
         features.put(feature.getName(), feature);
+    }
+    
+    // Needed by Controller to validate feature names
+    public Feature getFeature(String name) {
+        return features.get(name);
     }
     
     public List<String> getActiveFeatures() {
@@ -33,30 +32,18 @@ public class FeatureManager implements Observable{
         return active;
     }
     
-    public List<String> getLogs() {
-        return Collections.unmodifiableList(logs);
+    public Set<String> getAvailableFeatures() {
+        return features.keySet();
     }
-    
-    public void logSystemState(String action, String currentPage) {
-        String activeStr = String.join(", ", getActiveFeatures());
 
-        String logLine = String.format(
-            "%s | action=%s | page=%s | activeFeatures=[%s]",
-            java.time.LocalDateTime.now(),
-            action,
-            currentPage,
-            activeStr
-        );
+    // --- State Changes ---
 
-        logs.add(logLine);
-        notifyObservers(); // ConsoleView will refresh automatically
-    }
-    
     public void activate(String name) {
         Feature f = features.get(name);
         if (f != null && !f.isActive()) {
             f.activate();
-            logSystemState("activate(" + name + ")", /* currentPage */ "UNKNOWN");
+            // We notify observers that the model has changed
+            notifyObservers(); 
         }
     }
 
@@ -64,27 +51,25 @@ public class FeatureManager implements Observable{
         Feature f = features.get(name);
         if (f != null && f.isActive()) {
             f.deactivate();
-            logSystemState("deactivate(" + name + ")", /* currentPage */ "UNKNOWN");
+            notifyObservers();
         }
     }
     
-    public Set<String> getAvailableFeatures(){
-        return features.keySet();
-    }
-    
+    // --- Observer Pattern Implementation ---
+
     @Override
-    public void addObserver(Observer observer){
+    public void addObserver(Observer observer) {
         observers.add(observer);
     }
     
     @Override
-    public void removeObserver(Observer observer){
+    public void removeObserver(Observer observer) {
         observers.remove(observer);
     }
     
     @Override
-    public void notifyObservers(){
-        for( Observer o : observers ){
+    public void notifyObservers() {
+        for (Observer o : observers) {
             o.update();
         }
     }

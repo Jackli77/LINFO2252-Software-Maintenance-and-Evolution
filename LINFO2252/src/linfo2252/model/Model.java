@@ -8,6 +8,8 @@ import java.util.PriorityQueue;
 import linfo2252.model.features.FeatureManager;
 import linfo2252.model.features.UserFeature;
 import linfo2252.model.features.AppointmentFeature;
+// 1. Import your StateService (if it's in a different package)
+// import linfo2252.model.StateService; 
 
 public class Model {
 
@@ -17,7 +19,9 @@ public class Model {
     private List<Appointment> appointmentHistory;
     private FeatureManager featureManager;
     private UserProfile userProfile;
-
+    
+    // 2. Add the field for StateService
+    private StateService stateService; 
 
     public Model() {
         this.currentDateTime = LocalDateTime.now();
@@ -29,6 +33,14 @@ public class Model {
         this.featureManager = new FeatureManager();
         this.featureManager.registerFeature(new UserFeature());
         this.featureManager.registerFeature(new AppointmentFeature());
+
+        // 3. Initialize the service
+        this.stateService = new StateService();
+    }
+
+    // 4. Add the getter so the Controller can access it
+    public StateService getStateService() {
+        return stateService;
     }
 
     public FeatureManager getFeatureManager() {
@@ -82,18 +94,14 @@ public class Model {
     // ===== APPOINTMENTS ===== //
 
     public boolean createAppointment(LocalDateTime dateTime, String type, String department) {
-
-        // prevent past appointments
         if (dateTime.isBefore(currentDateTime)) return false;
 
         Appointment appt = new Appointment(dateTime, type, department);
         appointments.add(appt);
 
-        // Schedule reminder 1 day before (at same time)
         scheduleEvent(dateTime.minusDays(1), () ->
                 System.out.println("Reminder: \"" + type + "\" at " + department + " happens tomorrow."));
 
-        // Schedule actual appointment notice
         scheduleEvent(dateTime, () ->
                 System.out.println("Appointment NOW: " + type + " (" + department + ")"));
 
@@ -104,7 +112,6 @@ public class Model {
         appointments.remove(appt);
     }
 
-    // Events now operate with LocalDateTime precision
     private record ScheduledEvent(LocalDateTime dateTime, Runnable action)
             implements Comparable<ScheduledEvent> {
 

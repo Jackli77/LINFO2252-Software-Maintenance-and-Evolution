@@ -11,7 +11,6 @@ import linfo2252.view.ConsoleView;
 public class TestMain {
     public static void main(String[] args){
         Model model = new Model();
-        ConsoleView view = new ConsoleView(model.getFeatureManager());
         
         model.getFeatureManager().activate("feature_user");
         model.getFeatureManager().activate("feature_appointments");

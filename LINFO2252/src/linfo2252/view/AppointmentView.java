@@ -89,7 +89,7 @@ public class AppointmentView extends JPanel {
                     (Integer) minuteBox.getSelectedItem()
                 );
 
-                controller.onAddAppointment(dateTime, typeField.getText(), deptField.getText());
+                controller.addAppointment(dateTime, typeField.getText(), deptField.getText());
 
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Invalid date!", "Error", JOptionPane.ERROR_MESSAGE);
@@ -99,7 +99,7 @@ public class AppointmentView extends JPanel {
         JButton removeBtn = new JButton("Remove Selected");
         removeBtn.addActionListener(e -> {
             Appointment a = list.getSelectedValue();
-            if(a != null) controller.onRemoveAppointment(a);
+            if(a != null) controller.removeAppointment(a);
         });
 
         // Layout form
