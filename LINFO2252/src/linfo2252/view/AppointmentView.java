@@ -95,6 +95,9 @@ public class AppointmentView extends JPanel {
                 JOptionPane.showMessageDialog(this, "Invalid date!", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+        
+        JButton randomBtn = new JButton("Simulate Random Event");
+        randomBtn.addActionListener(e -> controller.createRandomAppointment());
 
         JButton removeBtn = new JButton("Remove Selected");
         removeBtn.addActionListener(e -> {
@@ -113,8 +116,10 @@ public class AppointmentView extends JPanel {
         form.add(new JLabel("Department:")); form.add(deptField);
 
         JPanel buttons = new JPanel();
+        
         buttons.add(addBtn);
         buttons.add(removeBtn);
+        buttons.add(randomBtn);
 
         JPanel top = new JPanel(new BorderLayout());
         top.add(form, BorderLayout.CENTER);

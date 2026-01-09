@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 
 public class StateService {
 
-    // ... (Previous saveState code) ...
-
     public void saveState(SystemState state) {
         String jsonString = convertToJson(state);
         try (FileWriter writer = new FileWriter("app_state.json")) {
@@ -18,35 +16,67 @@ public class StateService {
         }
     }
 
-    // New helper for the Controller Interface
     public String[] getStateAsLines(SystemState state) {
-        // reuse the conversion logic
-        String json = convertToJson(state);
-        // Split by newline so we return String[] as requested
-        return json.split("\n");
+        return convertToJson(state).split("\n");
     }
 
     private String convertToJson(SystemState state) {
-        // ... (The manual JSON string building logic from previous answer) ...
-        // Recap for clarity:
-        String featuresJson = formatListToJson(state.getActiveFeatures());
+        // We build the components separately for cleanliness
+        String featuresJson = formatStringList(state.getActiveFeatures());
+        String apptsJson = formatAppointmentList(state.getAppointments());
+        String historyJson = formatAppointmentList(state.getHistory());
+        String userJson = formatUser(state.getUserProfile());
+
         return String.format(
             "{\n" +
             "  \"timestamp\": \"%s\",\n" +
+            "  \"simulatedTime\": \"%s\",\n" +
             "  \"lastAction\": \"%s\",\n" +
             "  \"currentPage\": \"%s\",\n" +
-            "  \"activeFeatures\": %s\n" +
+            "  \"activeFeatures\": %s,\n" +
+            "  \"userProfile\": %s,\n" +
+            "  \"appointments\": %s,\n" +
+            "  \"history\": %s\n" +
             "}",
             escape(state.getTimestamp()),
+            escape(state.getSimulatedDate()),
             escape(state.getLastAction()),
             escape(state.getCurrentPage()),
-            featuresJson
+            featuresJson,
+            userJson,
+            apptsJson,
+            historyJson
         );
     }
-    
-    private String formatListToJson(List<String> list) {
+
+    // --- HELPER 1: List<String> -> ["A", "B"] ---
+    private String formatStringList(List<String> list) {
         if (list == null || list.isEmpty()) return "[]";
         return "[ " + list.stream().map(s -> "\"" + escape(s) + "\"").collect(Collectors.joining(", ")) + " ]";
+    }
+
+    // --- HELPER 2: UserProfile -> { "name": "John", "insurance": "PREMIUM" } ---
+    private String formatUser(UserProfile user) {
+        if (user == null) return "null";
+        return String.format(
+            "{ \"name\": \"%s\", \"insurance\": \"%s\" }",
+            escape(user.getName()),
+            user.getInsurance() // Enums are safe to print directly
+        );
+    }
+
+    // --- HELPER 3: List<Appointment> -> [ { "date": "...", "type": "..." }, ... ] ---
+    private String formatAppointmentList(List<Appointment> list) {
+        if (list == null || list.isEmpty()) return "[]";
+
+        String items = list.stream().map(a -> String.format(
+            "\n    { \"date\": \"%s\", \"type\": \"%s\", \"dept\": \"%s\" }",
+            a.getDateTime().toString(), // ISO-8601 format
+            escape(a.getType()),
+            escape(a.getDepartment())
+        )).collect(Collectors.joining(","));
+
+        return "[" + items + "\n  ]";
     }
 
     private String escape(String s) { return s == null ? "" : s.replace("\"", "\\\""); }

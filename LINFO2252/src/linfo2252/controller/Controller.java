@@ -7,6 +7,7 @@ import linfo2252.view.MainView;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 
 public class Controller implements ControllerInterface {
 
@@ -19,7 +20,6 @@ public class Controller implements ControllerInterface {
 
     public Controller(Model model) {
         this.model = model;
-        // View is initially null (disabled), enabled via enableUIView()
     }
 
     // Helper to log actions internally + update JSON file
@@ -27,15 +27,20 @@ public class Controller implements ControllerInterface {
         this.lastAction = action;
         this.lastPage = pageName;
         
-        // 1. Create State Object
+        // Gather Comprehensive Data from Model
         SystemState state = new SystemState(
-            LocalDateTime.now().toString(),
-            action,
-            pageName,
-            model.getFeatureManager().getActiveFeatures() // Get active feature names
+            LocalDateTime.now().toString(),               // Real Timestamp
+            action,                                       // Action
+            pageName,                                     // Page
+            model.getFeatureManager().getActiveFeatures(),// Features
+            
+            // --- NEW DATA ---
+            model.getCurrentDateTime().toString(),        // Simulated Time
+            model.getUserProfile(),                       // User Data
+            model.getAppointments(),                      // Future Appts
+            model.getAppointmentHistory()                 // Past Appts
         );
 
-        // 2. Save to JSON File
         model.getStateService().saveState(state);
     }
 
@@ -108,16 +113,17 @@ public class Controller implements ControllerInterface {
 
     @Override
     public String[] getStateAsLog() {
-        // 1. Build the current state object
-        SystemState currentState = new SystemState(
+        SystemState state = new SystemState(
             LocalDateTime.now().toString(),
             lastAction,
             lastPage,
-            model.getFeatureManager().getActiveFeatures()
+            model.getFeatureManager().getActiveFeatures(),
+            model.getCurrentDateTime().toString(),
+            model.getUserProfile(),
+            model.getAppointments(),
+            model.getAppointmentHistory()
         );
-
-        // 2. Convert to lines using the Service helper we added
-        return model.getStateService().getStateAsLines(currentState);
+        return model.getStateService().getStateAsLines(state);
     }
 
     // Getter for View to use
@@ -178,5 +184,38 @@ public class Controller implements ControllerInterface {
             view.updateAppointmentView(model.getAppointments());
             view.updateHistoryView(model.getAppointmentHistory());
         }
+    }
+    
+    public void createRandomAppointment() {
+        Random rng = new Random();
+
+        // 1. Data Definitions
+        String[] types = { 
+            "General Checkup", "Blood Test", "X-Ray", "MRI Scan", 
+            "Vaccination", "Dental Cleaning", "Eye Exam", "Physiotherapy" 
+        };
+        String[] depts = { 
+            "General Medicine", "Laboratory", "Radiology", "Radiology", 
+            "Pediatrics", "Dentistry", "Ophthalmology", "Rehabilitation" 
+        };
+
+        // 2. Pick Random Data
+        int index = rng.nextInt(types.length);
+        String type = types[index];
+        String dept = depts[index];
+
+        // 3. Pick Random Time (1-7 days in future, 08:00-17:00)
+        LocalDateTime baseTime = model.getCurrentDateTime();
+        int daysFuture = rng.nextInt(7) + 1;
+        int hour = 8 + rng.nextInt(10);
+        int minute = rng.nextBoolean() ? 0 : 30;
+
+        LocalDateTime randomDate = baseTime.plusDays(daysFuture)
+                                           .withHour(hour)
+                                           .withMinute(minute);
+
+        // 4. Reuse your existing method!
+        // This ensures it gets logged to JSON and the View refreshes automatically.
+        addAppointment(randomDate, type, dept);
     }
 }

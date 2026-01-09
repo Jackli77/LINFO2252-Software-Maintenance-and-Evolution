@@ -1,6 +1,21 @@
 {
-  "timestamp": "2026-01-08T22:02:30.806591100",
-  "lastAction": "switchPage",
-  "currentPage": "APPOINTMENTS",
-  "activeFeatures": []
+  "timestamp": "2026-01-09T17:17:02.473119800",
+  "simulatedTime": "2026-01-09T17:16:53.170231400",
+  "lastAction": "AddAppointment",
+  "currentPage": "Appointments",
+  "activeFeatures": [],
+  "userProfile": { "name": "John Doe", "insurance": "STANDARD" },
+  "appointments": [
+    { "date": "2026-01-11T17:16:53.170231400", "type": "Consultation", "dept": "Cardiology" },
+    { "date": "2026-01-14T17:16:53.170231400", "type": "Dental Cleaning", "dept": "Dentistry" },
+    { "date": "2026-01-17T17:16:53.170231400", "type": "Eye Checkup", "dept": "Ophthalmology" },
+    { "date": "2026-01-16T11:30:53.170231400", "type": "Physiotherapy", "dept": "Rehabilitation" },
+    { "date": "2026-01-13T16:30:53.170231400", "type": "Physiotherapy", "dept": "Rehabilitation" },
+    { "date": "2026-01-12T15:00:53.170231400", "type": "Eye Exam", "dept": "Ophthalmology" },
+    { "date": "2026-01-12T12:00:53.170231400", "type": "Blood Test", "dept": "Laboratory" }
+  ],
+  "history": [
+    { "date": "2026-01-06T17:16:53.170231400", "type": "Vaccination", "dept": "General Medicine" },
+    { "date": "2025-12-25T17:16:53.170231400", "type": "Blood Work", "dept": "Laboratory" }
+  ]
 }

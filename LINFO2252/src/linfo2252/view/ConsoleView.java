@@ -50,7 +50,8 @@ public class ConsoleView implements Observer, Runnable {
         System.out.println(" 3. Deactivate Feature");
         System.out.println(" 4. Enable GUI");
         System.out.println(" 5. Disable GUI");
-        System.out.println(" 6. Exit");
+        System.out.println(" 6. Simulate Random Appointment");
+        System.out.println(" 7. Exit");
         System.out.println("--------------------------------");
     }
 
@@ -74,12 +75,14 @@ public class ConsoleView implements Observer, Runnable {
                 System.out.println(">> GUI Disabled.");
                 break;
             case "6":
-                System.out.println("Exiting Console...");
+                controller.createRandomAppointment();
+                System.out.println(">> Random appointment created!");
+                break;                
+            case "7":
+                System.out.println("Exiting...");
                 running = false;
                 System.exit(0);
                 break;
-            default:
-                System.out.println("Invalid command.");
         }
     }
 
