@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-01-12T10:51:05.928402600",
-  "simulatedTime": "2026-01-12T10:50:59.681032100",
-  "lastAction": "ViewDisabled",
-  "currentPage": "APPOINTMENTS",
-  "activeFeatures": [ "TimeSimulation", "AppointmentManagement", "HistoryTracking" ],
+  "timestamp": "2026-01-12T11:00:57.376459100",
+  "simulatedTime": "2026-01-12T11:00:28.262349600",
+  "lastAction": "FeaturesUpdated",
+  "currentPage": "UserProfile",
+  "activeFeatures": [ "TimeSimulation" ],
   "userProfile": { "name": "John Doe", "insurance": "STANDARD" },
   "appointments": [
-    { "date": "2026-01-14T10:50:59.681032100", "type": "Consultation", "dept": "Cardiology" },
-    { "date": "2026-01-17T10:50:59.681032100", "type": "Dental Cleaning", "dept": "Dentistry" },
-    { "date": "2026-01-20T10:50:59.681032100", "type": "Eye Checkup", "dept": "Ophthalmology" }
+    { "date": "2026-01-14T11:00:28.262349600", "type": "Consultation", "dept": "Cardiology" },
+    { "date": "2026-01-17T11:00:28.262349600", "type": "Dental Cleaning", "dept": "Dentistry" },
+    { "date": "2026-01-20T11:00:28.262349600", "type": "Eye Checkup", "dept": "Ophthalmology" }
   ],
   "history": [
-    { "date": "2026-01-09T10:50:59.681032100", "type": "Vaccination", "dept": "General Medicine" },
-    { "date": "2025-12-28T10:50:59.681032100", "type": "Blood Work", "dept": "Laboratory" }
+    { "date": "2026-01-09T11:00:28.262349600", "type": "Vaccination", "dept": "General Medicine" },
+    { "date": "2025-12-28T11:00:28.262349600", "type": "Blood Work", "dept": "Laboratory" }
   ]
 }
