@@ -29,23 +29,20 @@ public class UserView extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        
-        // Title
+
         JLabel title = new JLabel("User Profile Settings");
         title.setFont(new Font("Arial", Font.BOLD, 18));
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
         add(title, gbc);
 
-        // Fields
         addField("Full Name:", nameField, 1, gbc);
         addField("Email Address:", emailField, 2, gbc);
         addField("Phone Number:", phoneField, 3, gbc);
         addField("Insurance Plan:", insuranceBox, 4, gbc);
 
-        // Save Button
         gbc.gridx = 1; gbc.gridy = 5; gbc.gridwidth = 1; gbc.anchor = GridBagConstraints.EAST;
         
-        saveBtn.setBackground(new Color(60, 179, 113)); // Medium Sea Green
+        saveBtn.setBackground(new Color(60, 179, 113));
         saveBtn.setForeground(Color.WHITE);
         saveBtn.setFocusPainted(false);
         
@@ -62,7 +59,6 @@ public class UserView extends JPanel {
         
         add(saveBtn, gbc);
 
-        // Status Feedback
         gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 2;
         add(statusLabel, gbc);
     }
@@ -76,27 +72,23 @@ public class UserView extends JPanel {
         add(field, gbc);
     }
 
-    /**
-     * Called by MainView to populate fields when the tab is opened
-     */
     public void updateUserInfo(UserProfile user) {
         nameField.setText(user.getName());
         emailField.setText(user.getEmail());
         phoneField.setText(user.getPhoneNumber());
         insuranceBox.setSelectedItem(user.getInsurance());
 
-        // Visual Flair: Change border/color based on Insurance
         if (user.getInsurance() == InsuranceLevel.PREMIUM) {
             setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(new Color(255, 215, 0), 2), 
                 " ⭐ PREMIUM MEMBER ⭐ ", TitledBorder.CENTER, TitledBorder.TOP
             ));
-            setBackground(new Color(255, 250, 240)); // Floral White
+            setBackground(new Color(255, 250, 240));
         } else {
             setBorder(BorderFactory.createTitledBorder(" Member Details "));
-            setBackground(null); // Default
+            setBackground(null);
         }
         
-        statusLabel.setText(" "); // Reset status
+        statusLabel.setText(" ");
     }
 }

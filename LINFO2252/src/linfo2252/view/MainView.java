@@ -53,25 +53,19 @@ public class MainView extends JFrame implements Observer {
         setJMenuBar(menuBar);
     }
 
-    /**
-     * dynamically builds checkboxes for every feature in the system
-     */
     private void refreshFeatureMenu() {
         featuresMenu.removeAll();
         var fm = controller.getModel().getFeatureManager();
         
         for (String featureName : fm.getAvailableFeatures()) {
-            boolean isActive = fm.getFeature(featureName).isActive();
-            
-            JCheckBoxMenuItem item = new JCheckBoxMenuItem(featureName, isActive);
-            
-            // Add Action Listener to toggle feature via Controller
+            boolean isActive = fm.getFeature(featureName).isActive();   
+            JCheckBoxMenuItem item = new JCheckBoxMenuItem(featureName, isActive);        
             item.addActionListener(e -> {
                 String[] target = { featureName };
                 if (item.isSelected()) {
-                    controller.activate(null, target); // Activate
+                    controller.activate(null, target);
                 } else {
-                    controller.activate(target, null); // Deactivate
+                    controller.activate(target, null);
                 }
             });
             
@@ -83,13 +77,13 @@ public class MainView extends JFrame implements Observer {
         JPanel sidebar = new JPanel(new GridLayout(0, 1));
         
         // 1. Initialize Buttons
-        homeBtn = new JButton("Home / Dashboard"); // <--- NEW
+        homeBtn = new JButton("Home / Dashboard");
         apptBtn = new JButton("Appointments");
         historyBtn = new JButton("History");
         userBtn = new JButton("User Profile");
 
         // 2. Add Actions
-        homeBtn.addActionListener(e -> showWelcomeView()); // <--- NEW
+        homeBtn.addActionListener(e -> showWelcomeView());
         apptBtn.addActionListener(e -> showAppointmentView());
         historyBtn.addActionListener(e -> showHistoryView());
         userBtn.addActionListener(e -> showUserView());
@@ -112,8 +106,6 @@ public class MainView extends JFrame implements Observer {
 
         add(sidebar, BorderLayout.WEST);
         add(contentPanel, BorderLayout.CENTER);
-
-        // Initial Data Load
         updateAppointmentView(controller.getModel().getAppointments());
         updateHistoryView(controller.getModel().getAppointmentHistory());
         updateDateDisplay(controller.getModel().getCurrentDateTime());
@@ -121,10 +113,6 @@ public class MainView extends JFrame implements Observer {
         showWelcomeView(); 
     }
     
-    
-    /**
-     * Enables/Disables sidebar buttons based on active features
-     */
     private void refreshSidebarState() {
         boolean apptActive = controller.isFeatureActive("AppointmentManagement");
         boolean histActive = controller.isFeatureActive("HistoryTracking");
@@ -188,19 +176,10 @@ public class MainView extends JFrame implements Observer {
     }
 
     // ================= OBSERVER IMPLEMENTATION =================
-    
-    /**
-     * Triggered when FeatureManager changes state (e.g. via Console or Menu)
-     */
     @Override
     public void update() {
-        // 1. Re-sync the menu checkboxes (so they match the Console)
         refreshFeatureMenu();
-        
-        // 2. Enable/Disable Sidebar buttons
         refreshSidebarState();
-        
-        // 3. If we are currently on a disabled page, force switch to UserProfile
         if (!apptBtn.isEnabled() && contentPanel.isAncestorOf(appointmentView)) {
             showUserView();
             JOptionPane.showMessageDialog(this, "The feature for the current page was deactivated.");

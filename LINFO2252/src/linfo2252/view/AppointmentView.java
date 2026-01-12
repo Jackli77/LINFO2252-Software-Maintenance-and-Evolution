@@ -22,33 +22,23 @@ public class AppointmentView extends JPanel {
         JPanel form = new JPanel(new GridLayout(0, 2, 5, 5));
 
      // ===== DATE/TIME PICKERS WITH DEFAULT VALUES =====
-
-     // Get current date/time
      LocalDateTime now = controller.getModel().getCurrentDateTime(); 
-     // or LocalDateTime.now() if not tied to model's simulated time
-
      int currentYear = now.getYear();
      int currentMonth = now.getMonthValue();
      int currentDay = now.getDayOfMonth();
      int currentHour = now.getHour();
      int currentMinute = now.getMinute();
 
-     // Year: current year → +5 future years
      JComboBox<Integer> yearBox = new JComboBox<>(
              IntStream.range(currentYear, currentYear + 6).boxed().toArray(Integer[]::new)
      );
      yearBox.setSelectedItem(currentYear);
-
-     // Month
      JComboBox<Integer> monthBox = new JComboBox<>(
              IntStream.range(1, 13).boxed().toArray(Integer[]::new)
      );
      monthBox.setSelectedItem(currentMonth);
-
-     // Day (we will refill this based on year + month)
      JComboBox<Integer> dayBox = new JComboBox<>();
 
-     // Utility to repopulate days correctly
      Runnable updateDays = () -> {
          dayBox.removeAllItems();
          int y = (Integer) yearBox.getSelectedItem();
@@ -58,19 +48,15 @@ public class AppointmentView extends JPanel {
          if (currentDay <= maxDay) dayBox.setSelectedItem(currentDay);
      };
      updateDays.run();
-
-     // Update day count when month or year changes
      yearBox.addActionListener(e -> updateDays.run());
      monthBox.addActionListener(e -> updateDays.run());
-
-     // Time
      JComboBox<Integer> hourBox = new JComboBox<>(
              IntStream.range(0, 24).boxed().toArray(Integer[]::new)
      );
      hourBox.setSelectedItem(currentHour);
 
      JComboBox<Integer> minuteBox = new JComboBox<>(new Integer[]{0, 15, 30, 45});
-     minuteBox.setSelectedItem((currentMinute / 15) * 15); // round to nearest quarter hour
+     minuteBox.setSelectedItem((currentMinute / 15) * 15);
 
         JTextField typeField = new JTextField("Consultation");
         JTextField deptField = new JTextField("General");
@@ -105,7 +91,6 @@ public class AppointmentView extends JPanel {
             if(a != null) controller.removeAppointment(a);
         });
 
-        // Layout form
         form.add(new JLabel("Year:")); form.add(yearBox);
         form.add(new JLabel("Month:")); form.add(monthBox);
         form.add(new JLabel("Day:")); form.add(dayBox);

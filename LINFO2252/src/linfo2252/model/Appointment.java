@@ -7,8 +7,7 @@ import java.time.format.DateTimeFormatter;
 public class Appointment {
     private LocalDateTime dateTime;
     private String type;
-    private String department;
-    
+    private String department;   
     // Optional features
     private String location;
     private String doctorName;

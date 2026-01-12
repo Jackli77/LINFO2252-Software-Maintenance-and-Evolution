@@ -12,7 +12,7 @@ public class WelcomeView extends JPanel {
 
         JLabel titleLabel = new JLabel("Smart Medical Appointment Manager");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        titleLabel.setForeground(new Color(50, 50, 50)); // Dark Gray
+        titleLabel.setForeground(new Color(50, 50, 50));
         
         add(titleLabel);
     }

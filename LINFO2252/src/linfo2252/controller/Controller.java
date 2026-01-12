@@ -191,7 +191,6 @@ public class Controller implements ControllerInterface {
 
     @Override
     public String[] getStateAsLog() {
-        // Reuses the cleaner helper method
         SystemState state = buildCurrentState(lastAction, lastPage);
         return model.getStateService().getStateAsLines(state);
     }

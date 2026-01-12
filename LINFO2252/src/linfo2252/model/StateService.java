@@ -21,7 +21,6 @@ public class StateService {
     }
 
     private String convertToJson(SystemState state) {
-        // We build the components separately for cleanliness
         String featuresJson = formatStringList(state.getActiveFeatures());
         String apptsJson = formatAppointmentList(state.getAppointments());
         String historyJson = formatAppointmentList(state.getHistory());
@@ -49,23 +48,20 @@ public class StateService {
         );
     }
 
-    // --- HELPER 1: List<String> -> ["A", "B"] ---
     private String formatStringList(List<String> list) {
         if (list == null || list.isEmpty()) return "[]";
         return "[ " + list.stream().map(s -> "\"" + escape(s) + "\"").collect(Collectors.joining(", ")) + " ]";
     }
 
-    // --- HELPER 2: UserProfile -> { "name": "John", "insurance": "PREMIUM" } ---
     private String formatUser(UserProfile user) {
         if (user == null) return "null";
         return String.format(
             "{ \"name\": \"%s\", \"insurance\": \"%s\" }",
             escape(user.getName()),
-            user.getInsurance() // Enums are safe to print directly
+            user.getInsurance()
         );
     }
 
-    // --- HELPER 3: List<Appointment> -> [ { "date": "...", "type": "..." }, ... ] ---
     private String formatAppointmentList(List<Appointment> list) {
         if (list == null || list.isEmpty()) return "[]";
 

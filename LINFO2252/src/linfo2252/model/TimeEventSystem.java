@@ -29,7 +29,7 @@ public class TimeEventSystem {
             TimeEvent event = it.next();
             if (!event.getTriggerDate().isAfter(currentDate)) {
                 event.execute(model);
-                it.remove(); // remove after trigger
+                it.remove();
             }
         }
     }

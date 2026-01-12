@@ -5,13 +5,7 @@ import java.util.*;
 import linfo2252.observer.Observable;
 import linfo2252.observer.Observer;
 
-/**
- * Manages the lifecycle of features.
- * Pure Data/Logic manager. Logging is delegated to the Controller.
- */
-public class FeatureManager implements Observable {
-    
-    // Stores features by name (e.g., "AppointmentManagement" -> Feature Object)
+public class FeatureManager implements Observable {   
     private final Map<String, Feature> features = new HashMap<>();
     private final List<Observer> observers = new ArrayList<>();
     
@@ -23,9 +17,6 @@ public class FeatureManager implements Observable {
         return features.get(name);
     }
 
-    /**
-     * Helper to check status without null checks in Controller
-     */
     public boolean isFeatureActive(String name) {
         Feature f = features.get(name);
         return f != null && f.isActive();
@@ -45,13 +36,10 @@ public class FeatureManager implements Observable {
         return features.keySet();
     }
 
-    // --- State Changes ---
-
     public void activate(String name) {
         Feature f = features.get(name);
         if (f != null && !f.isActive()) {
             f.activate();
-            // Notify Observers (MainView, ConsoleView) to refresh
             notifyObservers(); 
         }
     }
@@ -62,9 +50,7 @@ public class FeatureManager implements Observable {
             f.deactivate();
             notifyObservers();
         }
-    }
-    
-    // --- Observer Pattern Implementation ---
+    }    
 
     @Override
     public void addObserver(Observer observer) {

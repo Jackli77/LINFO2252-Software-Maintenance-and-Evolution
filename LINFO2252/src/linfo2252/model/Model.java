@@ -13,8 +13,6 @@ public class Model {
     private List<Appointment> appointmentHistory;
     private FeatureManager featureManager;
     private UserProfile userProfile;
-    
-    // 2. Add the field for StateService
     private StateService stateService; 
 
     public Model() {
@@ -30,7 +28,6 @@ public class Model {
         featureManager.registerFeature(new Feature("TimeSimulation"));
         featureManager.registerFeature(new Feature("UserProfile"));
         
-        // Set defaults
         featureManager.activate("AppointmentManagement");
         featureManager.activate("HistoryTracking");
         featureManager.activate("TimeSimulation");

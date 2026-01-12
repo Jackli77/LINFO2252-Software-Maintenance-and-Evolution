@@ -69,7 +69,6 @@ public class ConsoleView implements Observer, Runnable {
                 System.out.println(">> GUI Disabled."); 
             }
             case "6" -> {
-                // [!] REQUIREMENT: Close GUI when entering Console App
                 System.out.println(">> Switching to Console App Mode...");
                 controller.disableUIView(); 
                 showAppRootMenu(); 
@@ -299,7 +298,5 @@ public class ConsoleView implements Observer, Runnable {
     }
 
     @Override
-    public void update() {
-        // Notification is silent to not disrupt typing
-    }
+    public void update() {}
 }

@@ -3,13 +3,10 @@ package linfo2252.model;
 import java.util.List;
 
 public class SystemState {
-    // Meta Data
     private final String timestamp;
     private final String lastAction;
     private final String currentPage;
     private final List<String> activeFeatures;
-    
-    // Domain Data (New)
     private final String simulatedDate;
     private final UserProfile userProfile;
     private final List<Appointment> appointments;

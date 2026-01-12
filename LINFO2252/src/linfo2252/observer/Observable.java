@@ -1,6 +1,4 @@
-
 package linfo2252.observer;
-
 
 /**
  *

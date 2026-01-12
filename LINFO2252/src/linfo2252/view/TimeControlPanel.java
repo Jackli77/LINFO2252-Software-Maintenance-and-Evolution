@@ -6,10 +6,9 @@ import java.time.format.DateTimeFormatter;
 import linfo2252.controller.Controller;
 
 public class TimeControlPanel extends JPanel {
-
     private JLabel dateLabel;
-    private JButton dayBtn;   // Promoted to field
-    private JButton weekBtn;  // Promoted to field
+    private JButton dayBtn;
+    private JButton weekBtn;
 
     public TimeControlPanel(Controller controller) {
         setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -17,8 +16,6 @@ public class TimeControlPanel extends JPanel {
 
         dayBtn = new JButton("Advance 1 Day");
         weekBtn = new JButton("Advance 1 Week");
-        
-        // Initial date set
         String dateStr = controller.getModel().getCurrentDateTime()
                 .format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"));
         dateLabel = new JLabel("Current Date: " + dateStr);
@@ -35,12 +32,9 @@ public class TimeControlPanel extends JPanel {
         dateLabel.setText("Current Date: " + string);
     }
 
-    /**
-     * NEW: Enables or disables the time controls based on feature status
-     */
     public void setControlsEnabled(boolean enabled) {
         dayBtn.setEnabled(enabled);
         weekBtn.setEnabled(enabled);
-        dateLabel.setEnabled(enabled); // Optional: Grays out text too
+        dateLabel.setEnabled(enabled);
     }
 }
