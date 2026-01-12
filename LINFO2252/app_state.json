@@ -1,17 +1,12 @@
 {
-  "timestamp": "2026-01-12T11:34:06.745978400",
-  "simulatedTime": "2026-01-12T11:33:57.935073300",
-  "lastAction": "Navigate",
-  "currentPage": "WelcomeDashboard",
+  "timestamp": "2026-01-12T11:39:12.207659",
+  "simulatedTime": "2026-01-14T11:39:12.203662400",
+  "lastAction": "AdvanceTime_+2days",
+  "currentPage": "TimeControlPanel",
   "activeFeatures": [ "TimeSimulation", "UserProfile", "AppointmentManagement", "HistoryTracking" ],
-  "userProfile": { "name": "John Doe", "insurance": "STANDARD" },
-  "appointments": [
-    { "date": "2026-01-14T11:33:57.935073300", "type": "Consultation", "dept": "Cardiology" },
-    { "date": "2026-01-17T11:33:57.935073300", "type": "Dental Cleaning", "dept": "Dentistry" },
-    { "date": "2026-01-20T11:33:57.935073300", "type": "Eye Checkup", "dept": "Ophthalmology" }
-  ],
+  "userProfile": { "name": "", "insurance": "PREMIUM" },
+  "appointments": [],
   "history": [
-    { "date": "2026-01-09T11:33:57.935073300", "type": "Vaccination", "dept": "General Medicine" },
-    { "date": "2025-12-28T11:33:57.935073300", "type": "Blood Work", "dept": "Laboratory" }
+    { "date": "2026-01-13T12:39:12.203662400", "type": "FutureEvent", "dept": "General" }
   ]
 }
