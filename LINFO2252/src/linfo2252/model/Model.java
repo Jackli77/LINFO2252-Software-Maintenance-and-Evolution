@@ -29,16 +29,24 @@ public class Model {
         this.appointments = new ArrayList<>();
         this.appointmentHistory = new ArrayList<>();
         this.userProfile = new UserProfile();
-
         this.featureManager = new FeatureManager();
-        this.featureManager.registerFeature(new UserFeature());
-        this.featureManager.registerFeature(new AppointmentFeature());
+        
+        featureManager.registerFeature(new ConcreteFeature("AppointmentManagement"));
+        featureManager.registerFeature(new ConcreteFeature("HistoryTracking"));
+        featureManager.registerFeature(new ConcreteFeature("TimeSimulation"));
+        featureManager.activate("AppointmentManagement");
+        featureManager.activate("HistoryTracking");
+        featureManager.activate("TimeSimulation");
 
-        // 3. Initialize the service
         this.stateService = new StateService();
     }
 
-    // 4. Add the getter so the Controller can access it
+    private static class ConcreteFeature extends linfo2252.model.features.Feature {
+        public ConcreteFeature(String name) { super(name); }
+        @Override protected void onActivate() {} 
+        @Override protected void onDeactivate() {}
+    }
+
     public StateService getStateService() {
         return stateService;
     }

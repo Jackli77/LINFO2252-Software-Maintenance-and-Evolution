@@ -20,9 +20,7 @@ public class MainView extends JFrame {
     private UserView userView;
 
     public MainView(Controller controller) {
-        this.controller = controller;
-        // controller.setMainView(this); // Usually handled in Controller constructor, but fine here
-        
+        this.controller = controller;        
         setTitle("Smart Medical Appointment Manager");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(600, 400);
@@ -32,14 +30,9 @@ public class MainView extends JFrame {
         setVisible(true);
     }
 
-    // --- REFACTORED METHOD ---
-    // The View no longer touches the Model or FeatureManager directly.
     private void logState(String pageName, String action) {
-        // We delegate entirely to the controller.
-        // The controller will determine the "SystemState", timestamp it, and save the JSON.
         controller.logUserAction(action, pageName); 
     }
-    // -------------------------
 
     private void initUI() {
         JPanel sidebar = new JPanel(new GridLayout(0, 1));
@@ -64,15 +57,11 @@ public class MainView extends JFrame {
 
         appointmentView = new AppointmentView(controller);
         historyView = new AppointmentHistoryView(controller);
-        userView = new UserView(controller);
-        
+        userView = new UserView(controller);    
         add(sidebar, BorderLayout.WEST);
         add(contentPanel, BorderLayout.CENTER);
-        
-        // Initial Data Load
         updateAppointmentView(controller.getModel().getAppointments());
         updateHistoryView(controller.getModel().getAppointmentHistory());
-        
         showAppointmentView();
     }
 
@@ -80,8 +69,6 @@ public class MainView extends JFrame {
         contentPanel.removeAll();
         contentPanel.add(appointmentView, BorderLayout.CENTER);
         revalidate(); repaint();
-        
-        // Log the state change
         logState("APPOINTMENTS", "switchPage");
     }
 
@@ -90,19 +77,15 @@ public class MainView extends JFrame {
         historyView.updateHistory(controller.getModel().getAppointmentHistory());
         contentPanel.add(historyView, BorderLayout.CENTER);
         revalidate(); repaint();
-
-        // Log the state change
         logState("HISTORY", "switchPage");
     }
 
-    private void showUserView() {
+    public void showUserView() {
         contentPanel.removeAll();
         userView.updateUserInfo(controller.getModel().getUserProfile());
         contentPanel.add(userView, BorderLayout.CENTER);
-        revalidate(); repaint();
-
-        // Log the state change
-        logState("USER_PROFILE", "switchPage");
+        revalidate(); 
+        repaint();
     }
 
     // ====== Called by Controller when model updates ======

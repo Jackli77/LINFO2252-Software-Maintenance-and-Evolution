@@ -126,63 +126,62 @@ public class Controller implements ControllerInterface {
         return model.getStateService().getStateAsLines(state);
     }
 
-    // Getter for View to use
     public Model getModel() {
         return model;
     }
-    
- // In linfo2252.controller.Controller
+
+ // Helper to check feature status quickly
+    public boolean isFeatureActive(String name) {
+        var f = model.getFeatureManager().getFeature(name);
+        return f != null && f.isActive();
+    }
 
     public void addAppointment(LocalDateTime date, String type, String dept) {
-        // 1. Validate and Update Model
-        if (date == null || type.isEmpty() || dept.isEmpty()) return;
-
+        // 1. CHECK FEATURE
+        if (!isFeatureActive("AppointmentManagement")) {
+            System.out.println(">> BLOCKED: AppointmentManagement is disabled.");
+            return; 
+        }
+        if (date == null || type.isEmpty()) return;
         boolean success = model.createAppointment(date, type, dept);
-
         if (success) {
-            // 2. Log the action (Updates JSON)
             logUserAction("AddAppointment", "Appointments");
-
-            // 3. Refresh the View
-            if (view != null) {
-                view.updateAppointmentView(model.getAppointments());
-            }
-        } else {
-            // Optional: Handle failure (e.g. past date)
-            System.out.println("Could not create appointment (Date in past?)");
+            if (view != null) view.updateAppointmentView(model.getAppointments());
         }
     }
 
     public void removeAppointment(Appointment appt) {
-        // 1. Update Model
-        model.removeAppointment(appt);
-
-        // 2. Log the action
-        logUserAction("RemoveAppointment", "Appointments");
-
-        // 3. Refresh the View
-        if (view != null) {
-            view.updateAppointmentView(model.getAppointments());
+        // 1. CHECK FEATURE
+        if (!isFeatureActive("AppointmentManagement")) {
+            System.out.println(">> BLOCKED: AppointmentManagement is disabled.");
+            return;
         }
+
+        model.removeAppointment(appt);
+        logUserAction("RemoveAppointment", "Appointments");
+        if (view != null) view.updateAppointmentView(model.getAppointments());
     }
-    
+
     public void advanceDays(int days) {
-        // 1. Update the Model
+        // 1. CHECK FEATURE
+        if (!isFeatureActive("TimeSimulation")) {
+            System.out.println(">> BLOCKED: TimeSimulation is disabled.");
+            return;
+        }
+
         model.advanceDays(days);
-
-        // 2. Log the Action (StateService)
         logUserAction("AdvanceTime_+" + days + "days", "TimeControlPanel");
-
-        // 3. Update the View
-        // We must check if view is null (in case UI is disabled via disableUIView)
+        
         if (view != null) {
-            // Update the text label
             view.updateDateDisplay(model.getCurrentDateTime());
-            
-            // IMPORTANT: Advancing time might move appointments to history, 
-            // so we must refresh those lists too!
             view.updateAppointmentView(model.getAppointments());
-            view.updateHistoryView(model.getAppointmentHistory());
+            
+            // Only update history view if History feature is active
+            if (isFeatureActive("HistoryTracking")) {
+                view.updateHistoryView(model.getAppointmentHistory());
+            } else {
+                view.updateHistoryView(new java.util.ArrayList<>()); 
+            }
         }
     }
     
@@ -213,9 +212,26 @@ public class Controller implements ControllerInterface {
         LocalDateTime randomDate = baseTime.plusDays(daysFuture)
                                            .withHour(hour)
                                            .withMinute(minute);
-
-        // 4. Reuse your existing method!
-        // This ensures it gets logged to JSON and the View refreshes automatically.
         addAppointment(randomDate, type, dept);
     }
+    
+    public void updateUserProfile(String name, String email, String phone, 
+	            linfo2252.model.InsuranceLevel insurance) {	
+		// 1. Update Model directly
+		var profile = model.getUserProfile();
+		profile.setName(name);
+		profile.setEmail(email);
+		profile.setPhoneNumber(phone);
+		profile.setInsurance(insurance);
+		
+		// 2. Log the change (Crucial: Shows the new state in JSON)
+		logUserAction("UpdateProfile", "UserProfile");
+		
+		// 3. Refresh View if active
+		if (view != null) {
+		// Force a repaint of the user view to show new data/colors
+		// (Assumes MainView has a method to refresh the current tab)
+		view.showUserView(); 
+		}
+	}
 }
