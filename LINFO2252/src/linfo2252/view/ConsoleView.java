@@ -2,7 +2,7 @@ package linfo2252.view;
 
 import linfo2252.controller.Controller;
 import linfo2252.model.Appointment;
-import linfo2252.model.features.FeatureManager;
+import linfo2252.model.FeatureManager;
 import linfo2252.observer.Observer;
 
 import java.time.LocalDateTime;
@@ -50,7 +50,7 @@ public class ConsoleView implements Observer, Runnable {
         System.out.println(" 3. Deactivate Feature");
         System.out.println(" 4. Enable GUI");
         System.out.println(" 5. Disable GUI");
-        System.out.println(" 6. OPEN APPLICATION >>"); // Entry point to submenus
+        System.out.println(" 6. OPEN CONSOLE APP (Closes GUI) >>"); 
         System.out.println(" 7. Exit");
         System.out.println("============================");
     }
@@ -60,9 +60,20 @@ public class ConsoleView implements Observer, Runnable {
             case "1" -> showLogs();
             case "2" -> toggleFeature(true);
             case "3" -> toggleFeature(false);
-            case "4" -> { controller.enableUIView(); System.out.println(">> GUI Enabled."); }
-            case "5" -> { controller.disableUIView(); System.out.println(">> GUI Disabled."); }
-            case "6" -> showAppRootMenu(); // <--- GOES TO SUBMENUS
+            case "4" -> { 
+                controller.enableUIView(); 
+                System.out.println(">> GUI Enabled."); 
+            }
+            case "5" -> { 
+                controller.disableUIView(); 
+                System.out.println(">> GUI Disabled."); 
+            }
+            case "6" -> {
+                // [!] REQUIREMENT: Close GUI when entering Console App
+                System.out.println(">> Switching to Console App Mode...");
+                controller.disableUIView(); 
+                showAppRootMenu(); 
+            }
             case "7" -> {
                 System.out.println("Exiting...");
                 running = false;
@@ -80,10 +91,9 @@ public class ConsoleView implements Observer, Runnable {
             LocalDateTime now = controller.getModel().getCurrentDateTime();
             System.out.println("\n===== APPLICATION DASHBOARD [ " + now.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")) + " ] =====");
             
-            // We check features to show (LOCKED) status
             System.out.println(" 1. Manage Appointments " + getLockStatus("AppointmentManagement"));
             System.out.println(" 2. View History " + getLockStatus("HistoryTracking"));
-            System.out.println(" 3. User Profile Settings");
+            System.out.println(" 3. User Profile Settings " + getLockStatus("UserProfile"));
             System.out.println(" 4. Time Controls " + getLockStatus("TimeSimulation"));
             System.out.println(" 0. Back to System Menu");
             System.out.print("app> ");
@@ -145,6 +155,8 @@ public class ConsoleView implements Observer, Runnable {
 
     // --- 3. PROFILE ---
     private void openProfileSubmenu() {
+        if (!checkFeature("UserProfile")) return;
+
         boolean inMenu = true;
         while (inMenu) {
             var user = controller.getModel().getUserProfile();
@@ -254,7 +266,6 @@ public class ConsoleView implements Observer, Runnable {
         } catch (Exception e) { System.out.println(">> Invalid."); }
     }
 
-    // --- LOGS & FEATURES (Keep your existing implementations here) ---
     private void showLogs() {
         String[] logs = controller.getStateAsLog();
         System.out.println("\n[CURRENT STATE SNAPSHOT]");
@@ -262,26 +273,33 @@ public class ConsoleView implements Observer, Runnable {
     }
 
     private void toggleFeature(boolean enable) {
-        // (Paste your previously built toggle logic here)
-        // ...
-        // If you need the code for this again, let me know!
-        // Short version for compilation:
-         List<String> allFeatures = new ArrayList<>(featureManager.getAvailableFeatures());
-         Collections.sort(allFeatures);
-         System.out.println("\n--- Select Feature ---");
-         for (int i = 0; i < allFeatures.size(); i++) {
-             System.out.println((i+1) + ". " + allFeatures.get(i) + (featureManager.getFeature(allFeatures.get(i)).isActive() ? " [ON]" : " [OFF]"));
-         }
-         System.out.print("Choice: ");
-         try {
-             int c = Integer.parseInt(scanner.nextLine()) - 1;
-             if (c >= 0 && c < allFeatures.size()) {
-                 String[] target = {allFeatures.get(c)};
-                 if(enable) controller.activate(null, target); else controller.activate(target, null);
-                 System.out.println("Done.");
-             }
-         } catch(Exception e){}
+        List<String> allFeatures = new ArrayList<>(featureManager.getAvailableFeatures());
+        Collections.sort(allFeatures);
+
+        System.out.println("\n--- Select Feature to " + (enable ? "ACTIVATE" : "DEACTIVATE") + " ---");
+        for (int i = 0; i < allFeatures.size(); i++) {
+            String name = allFeatures.get(i);
+            String status = featureManager.getFeature(name).isActive() ? "[ACTIVE]" : "[INACTIVE]";
+            System.out.printf(" %d. %-20s %s%n", (i + 1), name, status);
+        }
+        System.out.println(" 0. Cancel");
+        System.out.print("Choice: ");
+
+        try {
+            int c = Integer.parseInt(scanner.nextLine()) - 1;
+            if (c >= 0 && c < allFeatures.size()) {
+                String[] target = {allFeatures.get(c)};
+                if (enable) controller.activate(null, target);
+                else controller.activate(target, null);
+                System.out.println(">> State Changed.");
+            }
+        } catch (Exception e) {
+            System.out.println(">> Invalid Input.");
+        }
     }
 
-    @Override public void update() { /* System.out.print("!"); */ }
+    @Override
+    public void update() {
+        // Notification is silent to not disrupt typing
+    }
 }

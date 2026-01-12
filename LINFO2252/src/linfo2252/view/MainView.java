@@ -8,42 +8,36 @@ import java.util.List;
 
 import linfo2252.controller.Controller;
 import linfo2252.model.Appointment;
-import linfo2252.observer.Observer; // 1. Import Observer
+import linfo2252.observer.Observer;
 
-public class MainView extends JFrame implements Observer { // 2. Implement Observer
+public class MainView extends JFrame implements Observer {
 
     private Controller controller;
     private JPanel contentPanel;
     private TimeControlPanel timeControlPanel;
 
-    // Views
+    private WelcomeView welcomeView;
     private AppointmentView appointmentView;
     private AppointmentHistoryView historyView;
     private UserView userView;
 
-    // Sidebar Buttons (Promoted to fields so we can disable them)
+    private JButton homeBtn;
     private JButton apptBtn;
     private JButton historyBtn;
     private JButton userBtn;
     
-    // Feature Menu
     private JMenu featuresMenu;
 
     public MainView(Controller controller) {
         this.controller = controller;
-        
-        // 3. Register as Observer to FeatureManager
-        // This ensures the GUI updates if features change via Console
         controller.getModel().getFeatureManager().addObserver(this);
 
         setTitle("Smart Medical Appointment Manager");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600); // Made slightly bigger for better layout
+        setSize(800, 600);
         setLocationRelativeTo(null);
         
-        // 4. Create the Menu Bar for Feature Toggling
         createMenuBar();
-
         initUI();
         setVisible(true);
     }
@@ -86,26 +80,32 @@ public class MainView extends JFrame implements Observer { // 2. Implement Obser
     }
 
     private void initUI() {
-        // Sidebar Setup
         JPanel sidebar = new JPanel(new GridLayout(0, 1));
+        
+        // 1. Initialize Buttons
+        homeBtn = new JButton("Home / Dashboard"); // <--- NEW
         apptBtn = new JButton("Appointments");
         historyBtn = new JButton("History");
         userBtn = new JButton("User Profile");
 
-        // Navigation Actions
+        // 2. Add Actions
+        homeBtn.addActionListener(e -> showWelcomeView()); // <--- NEW
         apptBtn.addActionListener(e -> showAppointmentView());
         historyBtn.addActionListener(e -> showHistoryView());
         userBtn.addActionListener(e -> showUserView());
 
+        // 3. Add to Sidebar (Home at top)
+        sidebar.add(homeBtn);
         sidebar.add(apptBtn);
         sidebar.add(historyBtn);
         sidebar.add(userBtn);
 
-        // Content Setup
         contentPanel = new JPanel(new BorderLayout());
         timeControlPanel = new TimeControlPanel(controller);
         add(timeControlPanel, BorderLayout.SOUTH);
 
+        // 4. Initialize Views
+        welcomeView = new WelcomeView(controller); // <--- NEW
         appointmentView = new AppointmentView(controller);
         historyView = new AppointmentHistoryView(controller);
         userView = new UserView(controller);
@@ -117,13 +117,10 @@ public class MainView extends JFrame implements Observer { // 2. Implement Obser
         updateAppointmentView(controller.getModel().getAppointments());
         updateHistoryView(controller.getModel().getAppointmentHistory());
         updateDateDisplay(controller.getModel().getCurrentDateTime());
-
-        // 5. Apply Feature Locks (Gray out buttons if features are off)
         refreshSidebarState();
-
-        // 6. DEFAULT VIEW IS NOW USER PROFILE
-        showUserView();
+        showWelcomeView(); 
     }
+    
     
     /**
      * Enables/Disables sidebar buttons based on active features
@@ -132,17 +129,27 @@ public class MainView extends JFrame implements Observer { // 2. Implement Obser
         boolean apptActive = controller.isFeatureActive("AppointmentManagement");
         boolean histActive = controller.isFeatureActive("HistoryTracking");
         boolean timeActive = controller.isFeatureActive("TimeSimulation");
+        boolean userActive = controller.isFeatureActive("UserProfile");
+        userBtn.setEnabled(userActive);
         apptBtn.setEnabled(apptActive);
         historyBtn.setEnabled(histActive);   
         apptBtn.setToolTipText(apptActive ? "Manage Appointments" : "Feature Disabled");
         timeControlPanel.setControlsEnabled(timeActive);
     }
 
-    // ================= NAVIGATION =================
+ // ================= NAVIGATION =================
+
+    public void showWelcomeView() {
+        contentPanel.removeAll();
+        welcomeView.refresh(); // Fetch fresh name/stats
+        contentPanel.add(welcomeView, BorderLayout.CENTER);
+        revalidate(); repaint();
+        
+        controller.logUserAction("Navigate", "WelcomeDashboard");
+    }
 
     public void showAppointmentView() {
-        if (!controller.isFeatureActive("AppointmentManagement")) return; // Guard
-        
+        if (!controller.isFeatureActive("AppointmentManagement")) return;
         contentPanel.removeAll();
         contentPanel.add(appointmentView, BorderLayout.CENTER);
         revalidate(); repaint();
@@ -150,10 +157,8 @@ public class MainView extends JFrame implements Observer { // 2. Implement Obser
     }
 
     public void showHistoryView() {
-        if (!controller.isFeatureActive("HistoryTracking")) return; // Guard
-
+        if (!controller.isFeatureActive("HistoryTracking")) return;
         contentPanel.removeAll();
-        // Always fetch fresh history
         historyView.updateHistory(controller.getModel().getAppointmentHistory());
         contentPanel.add(historyView, BorderLayout.CENTER);
         revalidate(); repaint();
@@ -162,12 +167,9 @@ public class MainView extends JFrame implements Observer { // 2. Implement Obser
 
     public void showUserView() {
         contentPanel.removeAll();
-        // Always fetch fresh profile
         userView.updateUserInfo(controller.getModel().getUserProfile());
         contentPanel.add(userView, BorderLayout.CENTER);
         revalidate(); repaint();
-        
-        // Log navigation
         controller.logUserAction("Navigate", "UserProfile");
     }
 

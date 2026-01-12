@@ -5,12 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import linfo2252.model.features.FeatureManager;
-import linfo2252.model.features.UserFeature;
-import linfo2252.model.features.AppointmentFeature;
-// 1. Import your StateService (if it's in a different package)
-// import linfo2252.model.StateService; 
-
 public class Model {
 
     private LocalDateTime currentDateTime;
@@ -31,20 +25,18 @@ public class Model {
         this.userProfile = new UserProfile();
         this.featureManager = new FeatureManager();
         
-        featureManager.registerFeature(new ConcreteFeature("AppointmentManagement"));
-        featureManager.registerFeature(new ConcreteFeature("HistoryTracking"));
-        featureManager.registerFeature(new ConcreteFeature("TimeSimulation"));
+        featureManager.registerFeature(new Feature("AppointmentManagement"));
+        featureManager.registerFeature(new Feature("HistoryTracking"));
+        featureManager.registerFeature(new Feature("TimeSimulation"));
+        featureManager.registerFeature(new Feature("UserProfile"));
+        
+        // Set defaults
         featureManager.activate("AppointmentManagement");
         featureManager.activate("HistoryTracking");
         featureManager.activate("TimeSimulation");
+        featureManager.activate("UserProfile");
 
         this.stateService = new StateService();
-    }
-
-    private static class ConcreteFeature extends linfo2252.model.features.Feature {
-        public ConcreteFeature(String name) { super(name); }
-        @Override protected void onActivate() {} 
-        @Override protected void onDeactivate() {}
     }
 
     public StateService getStateService() {

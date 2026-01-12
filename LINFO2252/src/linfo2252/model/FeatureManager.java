@@ -1,15 +1,17 @@
-package linfo2252.model.features;
+package linfo2252.model;
 
 import java.util.*;
+
 import linfo2252.observer.Observable;
 import linfo2252.observer.Observer;
 
 /**
  * Manages the lifecycle of features.
- * Now purely a Data/Logic manager. Logging is delegated to the Controller.
+ * Pure Data/Logic manager. Logging is delegated to the Controller.
  */
 public class FeatureManager implements Observable {
     
+    // Stores features by name (e.g., "AppointmentManagement" -> Feature Object)
     private final Map<String, Feature> features = new HashMap<>();
     private final List<Observer> observers = new ArrayList<>();
     
@@ -17,9 +19,16 @@ public class FeatureManager implements Observable {
         features.put(feature.getName(), feature);
     }
     
-    // Needed by Controller to validate feature names
     public Feature getFeature(String name) {
         return features.get(name);
+    }
+
+    /**
+     * Helper to check status without null checks in Controller
+     */
+    public boolean isFeatureActive(String name) {
+        Feature f = features.get(name);
+        return f != null && f.isActive();
     }
     
     public List<String> getActiveFeatures() {
@@ -42,7 +51,7 @@ public class FeatureManager implements Observable {
         Feature f = features.get(name);
         if (f != null && !f.isActive()) {
             f.activate();
-            // We notify observers that the model has changed
+            // Notify Observers (MainView, ConsoleView) to refresh
             notifyObservers(); 
         }
     }
