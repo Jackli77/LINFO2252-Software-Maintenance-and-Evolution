@@ -12,6 +12,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * A text-based Command Line Interface (CLI) for the application.
+ * <p>
+ * This class runs on a dedicated thread, allowing it to operate simultaneously with the Swing GUI.
+ * It serves two purposes:
+ * <ol>
+ * <li><b>System Administration:</b> Toggling features and controlling the GUI state.</li>
+ * <li><b>Application Simulation:</b> Providing a text-based alternative to the full application.</li>
+ * </ol>
+ */
 public class ConsoleView implements Observer, Runnable {
 
     private final Controller controller;
@@ -19,6 +29,10 @@ public class ConsoleView implements Observer, Runnable {
     private final Scanner scanner;
     private boolean running = true;
 
+    /**
+     * Initializes the console view and registers it as an observer of the FeatureManager.
+     * * @param controller The main application controller.
+     */
     public ConsoleView(Controller controller) {
         this.controller = controller;
         this.featureManager = controller.getModel().getFeatureManager();
@@ -26,10 +40,17 @@ public class ConsoleView implements Observer, Runnable {
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     * Starts the CLI processing loop in a new thread.
+     * This prevents the console input logic from blocking the Swing Event Dispatch Thread (EDT).
+     */
     public void start() {
         new Thread(this).start();
     }
 
+    /**
+     * The main event loop for the Console Interface.
+     */
     @Override
     public void run() {
         System.out.println("Welcome to Smart Medical Manager (Console Mode)");
@@ -37,11 +58,15 @@ public class ConsoleView implements Observer, Runnable {
             printMainMenu();
             System.out.print("> ");
             handleMainInput(scanner.nextLine().trim());
+            
+            // Small delay to prevent CPU spinning if input stream behaves unexpectedly
             try { Thread.sleep(100); } catch (InterruptedException e) {}
         }
     }
 
-    // ================= MAIN MENU =================
+    // ==========================================
+    // 1. SYSTEM CONFIGURATION MENU
+    // ==========================================
 
     private void printMainMenu() {
         System.out.println("\n===== MAIN SYSTEM MENU =====");
@@ -82,14 +107,21 @@ public class ConsoleView implements Observer, Runnable {
         }
     }
 
-    // ================= LEVEL 1: APP ROOT MENU =================
+    // ==========================================
+    // 2. APPLICATION SIMULATION (Sub-Menu)
+    // ==========================================
 
+    /**
+     * Displays the simulated application dashboard.
+     * This menu mimics the layout of the GUI version.
+     */
     private void showAppRootMenu() {
         boolean inApp = true;
         while (inApp) {
             LocalDateTime now = controller.getModel().getCurrentDateTime();
             System.out.println("\n===== APPLICATION DASHBOARD [ " + now.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")) + " ] =====");
             
+            // Display features with their lock status based on Feature Toggles
             System.out.println(" 1. Manage Appointments " + getLockStatus("AppointmentManagement"));
             System.out.println(" 2. View History " + getLockStatus("HistoryTracking"));
             System.out.println(" 3. User Profile Settings " + getLockStatus("UserProfile"));
@@ -108,9 +140,10 @@ public class ConsoleView implements Observer, Runnable {
         }
     }
 
-    // ================= LEVEL 2: SPECIFIC SUBMENUS =================
+    // -------------------------------------------------------------------------
+    // Sub-Menu Logic
+    // -------------------------------------------------------------------------
 
-    // --- 1. APPOINTMENTS ---
     private void openAppointmentSubmenu() {
         if (!checkFeature("AppointmentManagement")) return;
 
@@ -139,7 +172,6 @@ public class ConsoleView implements Observer, Runnable {
         }
     }
 
-    // --- 2. HISTORY ---
     private void openHistorySubmenu() {
         if (!checkFeature("HistoryTracking")) return;
 
@@ -152,7 +184,6 @@ public class ConsoleView implements Observer, Runnable {
         scanner.nextLine();
     }
 
-    // --- 3. PROFILE ---
     private void openProfileSubmenu() {
         if (!checkFeature("UserProfile")) return;
 
@@ -195,7 +226,6 @@ public class ConsoleView implements Observer, Runnable {
         }
     }
 
-    // --- 4. TIME ---
     private void openTimeSubmenu() {
         if (!checkFeature("TimeSimulation")) return;
 
@@ -217,8 +247,13 @@ public class ConsoleView implements Observer, Runnable {
         }
     }
 
-    // ================= HELPERS =================
+    // ==========================================
+    // 3. HELPER UTILITIES
+    // ==========================================
 
+    /**
+     * Checks if a feature is active before entering a submenu.
+     */
     private boolean checkFeature(String name) {
         if (controller.isFeatureActive(name)) return true;
         System.out.println(">> [!] Feature LOCKED: " + name + " is disabled.");
@@ -271,6 +306,9 @@ public class ConsoleView implements Observer, Runnable {
         for (String line : logs) System.out.println(line);
     }
 
+    /**
+     * Interactive wizard to toggle features on/off.
+     */
     private void toggleFeature(boolean enable) {
         List<String> allFeatures = new ArrayList<>(featureManager.getAvailableFeatures());
         Collections.sort(allFeatures);
@@ -298,5 +336,9 @@ public class ConsoleView implements Observer, Runnable {
     }
 
     @Override
-    public void update() {}
+    public void update() {
+        // Observer notification: 
+        // In a CLI, we generally don't proactively repaint the screen while the user is typing
+        // to avoid disrupting the input stream. The state will be reflected in the next cycle.
+    }
 }
